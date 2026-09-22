@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pendulum-sim"
+version = "0.1.0"
+description = "Supervised neural-network emulator for a torque-driven pendulum"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2.0,<3.0",
+    "matplotlib>=3.9,<4.0",
+    "torch>=2.4,<3.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
