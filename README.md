@@ -194,6 +194,28 @@ Before committing Phase 3, explain:
 * How the data will later be converted into PyTorch tensors.
 * The difference between simulation data and training data.
 
+### Phase 3 Data Format
+
+The initial pipeline saves each dataset as a compressed NumPy `.npz` archive. A dataset contains trajectories generated on one shared time grid:
+
+* `time`: one-dimensional time values with shape `(num_times,)`.
+* `theta`: angle values with shape `(num_trajectories, num_times)`.
+* `omega`: angular velocity values with shape `(num_trajectories, num_times)`.
+* `torque`: applied torque values with shape `(num_trajectories, num_times)`.
+* `metadata_json`: JSON metadata containing duration, sample count, initial conditions, physical parameters, and torque-function names and parameters.
+
+The shared-grid design keeps the file easy to inspect with NumPy while allowing one file to contain multiple trajectories. Datasets with a different number of time samples can be generated and saved as separate files, which supports the later experiments on data quantity.
+
+The `SimulationDataset.as_tensors()` method converts each trajectory-time pair into one supervised-learning example. Its four inputs are time, initial angle, initial angular velocity, and torque at that time. Its two targets are angle and angular velocity at that time. The resulting input tensor has shape `(num_trajectories * num_times, 4)`, and the target tensor has shape `(num_trajectories * num_times, 2)`.
+
+Run the Phase 3 example with:
+
+```powershell
+python scripts\phase3_data_demo.py
+```
+
+This writes an example dataset to `data/phase3_example.npz`. The `data/` directory contains generated training material and is excluded from Git.
+
 ---
 
 ## Phase 4: Supervised Neural Network
