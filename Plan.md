@@ -8,7 +8,7 @@ The goal of this project is to develop a supervised PyTorch neural network that 
 
 The project will be developed incrementally in phases. **Each phase must be reviewed and approved by me before it is committed to the GitHub repository.**
 
-The overall goal is not only to create a working neural-network emulator, but also to understand the numerical simulation, dataset generation, neural-network implementation, and training process. The numerical simulator is the reference source of truth; the neural network learns to approximate its full-state trajectories from examples.
+The overall goal is not only to create a working neural-network emulator, but also to understand the numerical simulation, dataset generation, neural-network implementation, and training process. The numerical simulator is the reference source of truth; the neural network learns to approximate its full-state trajectories from examples. The biggest thing that needs to be testable is how much data a NN requires to accurately model a dynamic system. 
 
 ---
 
@@ -103,8 +103,6 @@ Develop a numerical simulator for a simple pendulum with an applied torque input
 
 Begin with a clearly defined physical model and document all assumptions.
 
-For example, the model may take the form:
-
 $$
 \\ddot{\\theta}
 =
@@ -122,9 +120,7 @@ where:
 * \\(L\\) = pendulum length
 * \\(g\\) = gravitational acceleration
 * \\(b\\) = damping coefficient
-* \\(\\tau(t)\\) = applied torque
-
-If a different model is chosen, explain why.
+* \\(\\tau(t)\\) = applied torque as a control input
 
 ### Numerical Integration
 
@@ -265,6 +261,7 @@ Split data by complete trajectory into training, validation, and test sets. Do n
 
 The training process should save enough information to reproduce experiments, including the random seed, configuration, normalization values, model weights, optimizer state, and loss history.
 
+The most important aspect at this stage is to be able to see clearly how much data a NN needs to simulate a dynamic system.
 ---
 
 ## Phase 6: Supervised-Learning Experiments
