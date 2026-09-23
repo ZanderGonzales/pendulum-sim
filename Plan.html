@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>plan</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Plan_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Plan_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Plan_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Plan_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="Plan_files/libs/quarto-html/popper.min.js"></script>
+<script src="Plan_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Plan_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Plan_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Plan_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Plan_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Plan_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Plan_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="original-project-plan-supervised-neural-network-for-a-torque-driven-pendulum" class="level1">
+<h1>Original Project Plan: Supervised Neural Network for a Torque-Driven Pendulum</h1>
+<blockquote class="blockquote">
+<p>This document is the baseline project plan before any development phase is completed. It is preserved as a reference while <code>README.md</code> continues to evolve with setup instructions, implementation details, test results, and phase-specific notes.</p>
+</blockquote>
+<section id="project-overview" class="level2">
+<h2 class="anchored" data-anchor-id="project-overview">Project Overview</h2>
+<p>The goal of this project is to develop a supervised PyTorch neural network that learns to reproduce simulations of a simple pendulum subject to an applied torque input.</p>
+<p>The project will be developed incrementally in phases. <strong>Each phase must be reviewed and approved by me before it is committed to the GitHub repository.</strong></p>
+<p>The overall goal is not only to create a working neural-network emulator, but also to understand the numerical simulation, dataset generation, neural-network implementation, and training process. The numerical simulator is the reference source of truth; the neural network learns to approximate its full-state trajectories from examples. The biggest thing that needs to be testable is how much data a NN requires to accurately model a dynamic system.</p>
+<hr>
+</section>
+</section>
+<section id="project-goals" class="level1">
+<h1>Project Goals</h1>
+<p>The final system should be capable of learning the full state of a torque-driven pendulum from simulator-generated examples and reproducing trajectories for new combinations of initial conditions and supported torque inputs.</p>
+<p>The project will include:</p>
+<ol type="1">
+<li>A numerical pendulum simulator.</li>
+<li>A configurable dataset-generation pipeline.</li>
+<li>A PyTorch neural network.</li>
+<li>A configurable supervised-learning neural network.</li>
+<li>A reproducible training and evaluation pipeline.</li>
+<li>Training-loss, trajectory, and prediction-error visualization.</li>
+<li>Experiments investigating how the amount and variety of simulation data affect model performance.</li>
+</ol>
+<p>The project should be written so that individual components are modular and can be modified without unnecessarily changing the rest of the project.</p>
+<hr>
+</section>
+<section id="development-phases" class="level1">
+<h1>Development Phases</h1>
+<section id="phase-1-project-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="phase-1-project-architecture">Phase 1: Project Architecture</h2>
+<p>The goal of this phase is to establish the project structure and development environment.</p>
+<p>Tasks:</p>
+<ul>
+<li>Initialize the local Git repository and connect it to a GitHub repository when the remote URL is available.</li>
+<li>Create a Python virtual environment.</li>
+<li>Install and document required dependencies.</li>
+<li>Use PyTorch for neural-network development.</li>
+<li>Establish a sensible project directory structure.</li>
+<li>Create initial documentation.</li>
+<li>Establish a reproducible way to install dependencies.</li>
+<li>Verify that the development environment works by running a small test program.</li>
+</ul>
+<section id="phase-1-project-structure" class="level3">
+<h3 class="anchored" data-anchor-id="phase-1-project-structure">Phase 1 Project Structure</h3>
+<p>The initial structure is intentionally small:</p>
+<pre class="text"><code>README.md                 Project requirements and learning notes
+requirements.txt          Runtime and development dependency ranges
+pyproject.toml            Package metadata and pytest configuration
+.gitignore                Local environment and generated-output exclusions
+src/pendulum_sim/         Importable project source package
+tests/                    Automated checks
+scripts/                  Runnable development utilities</code></pre>
+<p>The <code>src</code> layout keeps project code separate from tests and scripts. The <code>data/</code> and <code>runs/</code> directories will be created when later phases generate datasets and experiment outputs; they are excluded from Git because those files are generated artifacts.</p>
+</section>
+<section id="phase-1-setup" class="level3">
+<h3 class="anchored" data-anchor-id="phase-1-setup">Phase 1 Setup</h3>
+<p>From the project directory on Windows PowerShell:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m venv <span class="op">.</span><span class="fu">venv</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\\<span class="op">.</span><span class="fu">venv</span>\\Scripts\\Activate<span class="op">.</span><span class="fu">ps1</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pip install <span class="op">--</span>upgrade pip</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pip install <span class="op">-</span>r requirements<span class="op">.</span><span class="fu">txt</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pip install <span class="op">-</span>e <span class="op">.</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>python scripts\\smoke_test<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pytest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The virtual environment keeps this project’s Python packages isolated from the system Python installation. It can be left with <code>deactivate</code> and reactivated later with <code>.\\.venv\\Scripts\\Activate.ps1</code>. The dependency ranges are recorded in both <code>requirements.txt</code> and <code>pyproject.toml</code> so the environment can be installed directly or through the package metadata.</p>
+<p>The Phase 1 dependencies have these roles:</p>
+<ul>
+<li>NumPy provides numerical arrays and calculations for the simulator.</li>
+<li>Matplotlib provides plots and the pendulum animation.</li>
+<li>PyTorch provides tensors and the supervised neural network.</li>
+<li>Pytest runs the automated checks.</li>
+</ul>
+<p>Before committing Phase 1, explain:</p>
+<ul>
+<li>The purpose of each major directory/file.</li>
+<li>Why the selected dependencies are necessary.</li>
+<li>How the virtual environment works.</li>
+<li>How the smoke test and automated test verify the installation.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="phase-2-dynamic-system-simulator" class="level2">
+<h2 class="anchored" data-anchor-id="phase-2-dynamic-system-simulator">Phase 2: Dynamic System Simulator</h2>
+<p>Develop a numerical simulator for a simple pendulum with an applied torque input.</p>
+<section id="governing-dynamics" class="level3">
+<h3 class="anchored" data-anchor-id="governing-dynamics">Governing Dynamics</h3>
+<p>Begin with a clearly defined physical model and document all assumptions.</p>
+<p><span class="math display">\[
+\\ddot{\\theta}
+=
+-\\frac{g}{L}\\sin(\\theta)
+-\\frac{b}{mL^2}\\dot{\\theta}
++\\frac{\\tau(t)}{mL^2}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li>\(\theta\) = pendulum angle</li>
+<li>\(\dot{\theta}\) = angular velocity</li>
+<li>\(\ddot{\theta}\) = angular acceleration</li>
+<li>\(m\) = pendulum mass</li>
+<li>\(L\) = pendulum length</li>
+<li>\(g\) = gravitational acceleration</li>
+<li>\(b\) = damping coefficient</li>
+<li>\(\tau(t)\) = applied torque as a control input</li>
+</ul>
+</section>
+<section id="numerical-integration" class="level3">
+<h3 class="anchored" data-anchor-id="numerical-integration">Numerical Integration</h3>
+<p>Use a <strong>Runge-Kutta method</strong>, preferably fourth-order Runge-Kutta (RK4), to numerically integrate the equations of motion.</p>
+<p>The implementation should make the following parameters easy to change:</p>
+<ul>
+<li>Simulation duration</li>
+<li>Number of time steps</li>
+<li>Time-step size</li>
+<li>Initial angle</li>
+<li>Initial angular velocity</li>
+<li>Pendulum parameters</li>
+<li>Applied torque function</li>
+</ul>
+<p>The number of time samples must be configurable so that later experiments can investigate how the quantity of training data affects neural-network performance.</p>
+</section>
+<section id="visualization" class="level3">
+<h3 class="anchored" data-anchor-id="visualization">Visualization</h3>
+<p>Create an intuitive visualization system that can:</p>
+<ul>
+<li>Plot angle versus time.</li>
+<li>Plot angular velocity versus time.</li>
+<li>Plot applied torque versus time.</li>
+<li>Display an animation of the pendulum motion.</li>
+</ul>
+<p>The visualization code should be separate from the core numerical simulator where practical.</p>
+<p>Before committing Phase 2, explain:</p>
+<ul>
+<li>The governing equations.</li>
+<li>How the equations are converted into a form suitable for numerical integration.</li>
+<li>How RK4 works.</li>
+<li>The meaning of the simulator’s inputs and outputs.</li>
+<li>How the visualization works.</li>
+<li>Any numerical or modeling assumptions that were made.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="phase-3-data-generation-and-storage" class="level2">
+<h2 class="anchored" data-anchor-id="phase-3-data-generation-and-storage">Phase 3: Data Generation and Storage</h2>
+<p>Create a data-generation pipeline using the simulator from Phase 2.</p>
+<p>The pipeline should make it easy to:</p>
+<ul>
+<li>Run simulations with different numbers of time samples.</li>
+<li>Change initial conditions.</li>
+<li>Change torque inputs.</li>
+<li>Change physical parameters.</li>
+<li>Save simulation results.</li>
+<li>Load saved simulation results for training.</li>
+</ul>
+<p>The saved data should contain enough information to reproduce or understand the simulation, including relevant:</p>
+<ul>
+<li>Time values</li>
+<li>Inputs</li>
+<li>States</li>
+<li>Physical parameters</li>
+<li>Initial conditions</li>
+</ul>
+<p>Use a data format that is convenient for Python/PyTorch while remaining reasonably easy to inspect.</p>
+<p>Document the data format.</p>
+<p>Before committing Phase 3, explain:</p>
+<ul>
+<li>What is being saved.</li>
+<li>Why the chosen data format was used.</li>
+<li>How the data will later be converted into PyTorch tensors.</li>
+<li>The difference between simulation data and training data.</li>
+</ul>
+<hr>
+</section>
+<section id="phase-4-supervised-neural-network" class="level2">
+<h2 class="anchored" data-anchor-id="phase-4-supervised-neural-network">Phase 4: Supervised Neural Network</h2>
+<p>Using PyTorch, create a neural network that predicts the full pendulum state at a requested time.</p>
+<p>The simulator remains separate from the neural network. The simulator generates reference trajectories, and the network learns from those trajectories using ordinary supervised learning.</p>
+<section id="model-contract" class="level3">
+<h3 class="anchored" data-anchor-id="model-contract">Model Contract</h3>
+<p>The initial model should learn a family of trajectories while physical parameters remain fixed. Each training example represents one time on one simulated trajectory.</p>
+<p>The network inputs are:</p>
+<ul>
+<li>Time, <code>t</code>.</li>
+<li>Initial angle, <code>theta_0</code>.</li>
+<li>Initial angular velocity, <code>omega_0</code>.</li>
+<li>Applied torque evaluated at that time, <code>tau(t)</code>.</li>
+</ul>
+<p>The network outputs are the full state at that time:</p>
+<ul>
+<li>Angle, <code>theta(t)</code>.</li>
+<li>Angular velocity, <code>omega(t)</code>.</li>
+</ul>
+<p>The initial implementation should use documented analytic torque functions, such as zero, constant, sinusoidal, or pulse torque. The selected torque family and its parameters must be recorded with each trajectory. If the model later needs to generalize across torque functions, the torque-function parameters or a sampled torque history must be added to the model inputs rather than assuming that one instantaneous torque value uniquely identifies an entire input signal.</p>
+<p>The network architecture should be simple enough to understand and modify.</p>
+<p>Document:</p>
+<ul>
+<li>Network inputs.</li>
+<li>Network outputs.</li>
+<li>Number of layers.</li>
+<li>Number of neurons per layer.</li>
+<li>Activation functions.</li>
+<li>Weight initialization, if applicable.</li>
+<li>How input and output normalization is performed.</li>
+</ul>
+<p>Before committing Phase 4, explain:</p>
+<ul>
+<li>What a PyTorch tensor is.</li>
+<li>How the neural network is represented in PyTorch.</li>
+<li>How forward propagation works in the implementation.</li>
+<li>What the activation functions do.</li>
+<li>What the network is actually learning from the simulator data.</li>
+<li>Why the model predicts both angle and angular velocity as a full state.</li>
+<li>How input and output normalization affects training.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="phase-5-train-and-evaluate-the-neural-network" class="level2">
+<h2 class="anchored" data-anchor-id="phase-5-train-and-evaluate-the-neural-network">Phase 5: Train and Evaluate the Neural Network</h2>
+<p>Train the neural network using the simulation data.</p>
+<p>Track and visualize the training loss throughout the training process.</p>
+<p>At minimum, investigate:</p>
+<ul>
+<li>Training loss versus epoch.</li>
+<li>Model predictions versus simulator results.</li>
+<li>Prediction error.</li>
+<li>The effect of changing the amount of training data.</li>
+<li>Performance on simulator trajectories not used during training.</li>
+<li>Performance for initial conditions and supported torque inputs that were not present in the training split.</li>
+</ul>
+<p>Split data by complete trajectory into training, validation, and test sets. Do not randomly split neighboring time samples from one trajectory across all three sets, because that would make evaluation overly optimistic.</p>
+<p>The training process should save enough information to reproduce experiments, including the random seed, configuration, normalization values, model weights, optimizer state, and loss history.</p>
+</section>
+<section id="the-most-important-aspect-at-this-stage-is-to-be-able-to-see-clearly-how-much-data-a-nn-needs-to-simulate-a-dynamic-system." class="level2">
+<h2 class="anchored" data-anchor-id="the-most-important-aspect-at-this-stage-is-to-be-able-to-see-clearly-how-much-data-a-nn-needs-to-simulate-a-dynamic-system.">The most important aspect at this stage is to be able to see clearly how much data a NN needs to simulate a dynamic system.</h2>
+</section>
+<section id="phase-6-supervised-learning-experiments" class="level2">
+<h2 class="anchored" data-anchor-id="phase-6-supervised-learning-experiments">Phase 6: Supervised-Learning Experiments</h2>
+<p>Use the trained supervised model to investigate:</p>
+<ul>
+<li>More simulation data is available.</li>
+<li>Less simulation data is available.</li>
+<li>Different initial conditions are used.</li>
+<li>Different torque inputs are used.</li>
+</ul>
+<p>Compare interpolation and generalization using trajectory plots and numerical metrics such as mean absolute error, root mean squared error, and maximum absolute state error. Also investigate how prediction quality changes over the simulation time horizon.</p>
+<p>Before committing Phase 6, explain:</p>
+<ul>
+<li>How the experiment changes the available training information.</li>
+<li>Whether the model is interpolating within the training distribution or generalizing to an unseen condition.</li>
+<li>How the numerical metrics relate to visible trajectory differences.</li>
+<li>What limitations remain in a purely data-driven approximation.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="experimental-goals" class="level1">
+<h1>Experimental Goals</h1>
+<p>A major goal of this project is to understand the relationship between the amount of available data and the model’s ability to reproduce the pendulum dynamics.</p>
+<p>Experiments should therefore be designed so that the number of simulation samples can easily be changed.</p>
+<p>Where practical, compare:</p>
+<ul>
+<li>Large datasets vs.&nbsp;small datasets.</li>
+<li>Different ranges of initial conditions.</li>
+<li>Training torque functions vs.&nbsp;held-out torque functions.</li>
+<li>Different training durations.</li>
+<li>Short-horizon vs.&nbsp;long-horizon prediction accuracy.</li>
+</ul>
+<p>Results should be visualized rather than evaluated solely from numerical loss values.</p>
+<hr>
+</section>
+<section id="code-quality-and-project-structure" class="level1">
+<h1>Code Quality and Project Structure</h1>
+<p>Prefer a modular project structure rather than putting the entire project into one Python file.</p>
+<p>Keep separate concerns such as:</p>
+<ul>
+<li>Physics/model definition</li>
+<li>Numerical simulation</li>
+<li>Data generation</li>
+<li>Data loading</li>
+<li>Neural-network definition</li>
+<li>Training</li>
+<li>Evaluation metrics</li>
+<li>Visualization</li>
+<li>Experiment configuration</li>
+</ul>
+<p>Use clear variable and function names.</p>
+<p>Avoid unnecessary abstractions that make the project harder for a beginner to understand.</p>
+<p>Do not introduce libraries or architectural patterns without explaining why they are useful.</p>
+<hr>
+</section>
+<section id="aicopilot-instructions" class="level1">
+<h1>AI/Copilot Instructions</h1>
+<p>I am an undergraduate Mechanical Engineering student working on this project as part of a research lab.</p>
+<p>My primary goal is <strong>to learn</strong>, not simply to have the project written for me.</p>
+<p>I have taken system dynamics and remember most of the relevant concepts, but I have not previously worked with PyTorch. I understand neural networks theoretically, but I need additional explanation of how they are implemented in PyTorch.</p>
+<p>Therefore:</p>
+<ul>
+<li>Explain important implementation decisions before or while implementing them.</li>
+<li>Explain PyTorch concepts when they first appear.</li>
+<li>Connect the code to the underlying mathematics and physics.</li>
+<li>Do not hide important implementation details behind unnecessary abstractions.</li>
+<li>Prefer understandable code over excessively optimized code.</li>
+<li>If there are multiple reasonable approaches, explain the tradeoffs and let me choose when the decision is significant.</li>
+<li>Do not make major architectural decisions without explaining them.</li>
+<li>Point out when an implementation choice is a simplification of the real physical system.</li>
+<li>Clearly distinguish between the simulator, the generated dataset, the supervised-learning model, and the evaluation process.</li>
+</ul>
+<p>I want to understand the code well enough that I could explain it to another engineering student.</p>
+<hr>
+</section>
+<section id="phase-review-and-git-workflow" class="level1">
+<h1>Phase Review and Git Workflow</h1>
+<p>Each phase is a separate milestone and should correspond to a separate Git commit.</p>
+<p><strong>Do not commit changes automatically.</strong></p>
+<p>At the end of every phase:</p>
+<ol type="1">
+<li>Run appropriate tests or demonstrations.</li>
+<li>Verify that the implementation works.</li>
+<li>Summarize what was completed.</li>
+<li>Explain the important concepts used.</li>
+<li>Explain important implementation decisions.</li>
+<li>Identify any difficulties, bugs, or uncertainties encountered.</li>
+<li>Explain what files were added or modified.</li>
+<li>Explain how the phase connects to the next phase.</li>
+<li>Give me an opportunity to review the work.</li>
+<li>Wait for my explicit approval before creating the commit.</li>
+</ol>
+<p>The commit should only be created after I explicitly approve the phase.</p>
+<p>Use clear commit messages such as:</p>
+<ul>
+<li><code>Phase 1: Set up project architecture</code></li>
+<li><code>Phase 2: Implement pendulum simulator</code></li>
+<li><code>Phase 3: Add simulation data pipeline</code></li>
+<li><code>Phase 4: Implement neural network</code></li>
+<li><code>Phase 5: Train supervised baseline</code></li>
+<li><code>Phase 6: Run supervised-learning experiments</code></li>
+</ul>
+<hr>
+</section>
+<section id="general-development-rules" class="level1">
+<h1>General Development Rules</h1>
+<ul>
+<li>Do not skip phases.</li>
+<li>Do not implement future phases prematurely unless I explicitly ask.</li>
+<li>Keep the project runnable at the end of each phase.</li>
+<li>Prefer small, understandable changes.</li>
+<li>Test functionality as it is developed.</li>
+<li>Explain errors and debugging steps rather than silently fixing them.</li>
+<li>Do not commit to GitHub without my explicit approval.</li>
+<li>Preserve reproducibility of experiments.</li>
+<li>Record important assumptions and parameter choices in the documentation.</li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
