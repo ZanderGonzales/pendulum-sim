@@ -264,6 +264,26 @@ Before committing Phase 4, explain:
 * Why the model predicts both angle and angular velocity as a full state.
 * How input and output normalization affects training.
 
+### Phase 4 Initial Architecture
+
+The initial implementation uses `PendulumStateNetwork`, a small multilayer perceptron with:
+
+* Four input features: `t`, `theta_0`, `omega_0`, and `tau(t)`.
+* Two hidden layers with 64 neurons each.
+* `Tanh` activation after each hidden layer.
+* Two output values: `theta(t)` and `omega(t)`.
+* PyTorch's default linear-layer weight initialization.
+
+The `Standardizer` stores a feature-wise mean and standard deviation calculated from the training data. Inputs are standardized before the forward pass, and predicted targets can be converted back to physical units with the stored target standardizer. A zero-variance feature uses a scale of one so constant features remain well-defined.
+
+Run the Phase 4 model demonstration with:
+
+```powershell
+python scripts\phase4_model_demo.py
+```
+
+This demonstrates dataset-to-tensor conversion, normalization, a forward pass, and the two-component full-state output. It does not train the network; training belongs to Phase 5.
+
 ---
 
 ## Phase 5: Train and Evaluate the Neural Network
