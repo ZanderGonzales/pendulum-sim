@@ -305,6 +305,22 @@ Split data by complete trajectory into training, validation, and test sets. Do n
 
 The training process should save enough information to reproduce experiments, including the random seed, configuration, normalization values, model weights, optimizer state, and loss history.
 
+### Phase 5 Training Outputs
+
+The initial training pipeline uses mean squared error (MSE) between normalized predicted states and normalized simulator states. It records training and validation loss for every epoch. The evaluation pipeline converts predictions back to physical units and reports mean absolute error, root mean squared error, and maximum absolute state error on complete held-out trajectories.
+
+The training demo also saves:
+
+* `runs/phase5_training_history.png`: training and validation loss versus epoch.
+* `runs/phase5_prediction.png`: model and simulator angle/velocity trajectories for one test trajectory.
+* `runs/phase5_checkpoint.pt`: model weights, optimizer state, normalization values, trajectory split, and loss history.
+
+Run it with:
+
+```powershell
+python scripts\phase5_training_demo.py
+```
+
 ---
 
 ## Phase 6: Supervised-Learning Experiments
