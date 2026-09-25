@@ -78,15 +78,26 @@ def train_supervised(
     train_fraction: float = 0.6,
     validation_fraction: float = 0.2,
     seed: int = 0,
+    split: TrajectorySplit | None = None,
 ) -> TrainingResult:
     """Train a full-state model using MSE and trajectory-level data splits."""
     if epochs <= 0:
         raise ValueError("epochs must be positive")
 
     torch.manual_seed(seed)
-    split = split_trajectory_indices(
-        dataset.theta.shape[0], train_fraction, validation_fraction, seed
-    )
+    if split is None:
+        split = split_trajectory_indices(
+            dataset.theta.shape[0], train_fraction, validation_fraction, seed
+        )
+    else:
+        if split.train.size == 0 or split.validation.size == 0:
+            raise ValueError("explicit splits must include training and validation trajectories")
+        selected = np.concatenate([split.train, split.validation, split.test])
+        if np.any(selected < 0) or np.any(selected >= dataset.theta.shape[0]):
+            raise ValueError("split indices must refer to trajectories in the dataset")
+        if np.unique(selected).size != selected.size:
+            raise ValueError("trajectory splits must not overlap")
+
     train_inputs, train_targets = tensors_for_trajectories(dataset, split.train)
     validation_inputs, validation_targets = tensors_for_trajectories(dataset, split.validation)
 
