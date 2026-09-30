@@ -1,5 +1,4 @@
 # Supervised Neural Network for a Torque-Driven Pendulum
-
 ## Project Overview
 
 The goal of this project is to develop a supervised PyTorch neural network that learns to reproduce simulations of a simple pendulum subject to an applied torque input.
@@ -54,9 +53,11 @@ README.md                 Project requirements and learning notes
 requirements.txt          Runtime and development dependency ranges
 pyproject.toml            Package metadata and pytest configuration
 .gitignore                Local environment and generated-output exclusions
-src/pendulum_sim/         Importable project source package
+src/pendulum_sim/         Physical system simulation and data package
+src/model_baseline/       Baseline supervised model package
 tests/                    Automated checks
-scripts/                  Runnable development utilities
+scripts/simulation/       Simulation and data demonstrations
+scripts/model_baseline/   Model and experiment demonstrations
 ```
 
 The `src` layout keeps project code separate from tests and scripts. The `data/` and `runs/` directories will be created when later phases generate datasets and experiment outputs; they are excluded from Git because those files are generated artifacts.
@@ -211,7 +212,7 @@ The `SimulationDataset.as_tensors()` method converts each trajectory-time pair i
 Run the Phase 3 example with:
 
 ```powershell
-python scripts\phase3_data_demo.py
+python scripts\simulation\phase3_data_demo.py
 ```
 
 This writes an example dataset to `data/phase3_example.npz`. The `data/` directory contains generated training material and is excluded from Git.
@@ -279,7 +280,7 @@ The `Standardizer` stores a feature-wise mean and standard deviation calculated 
 Run the Phase 4 model demonstration with:
 
 ```powershell
-python scripts\phase4_model_demo.py
+python scripts\model_baseline\phase4_model_demo.py
 ```
 
 This demonstrates dataset-to-tensor conversion, normalization, a forward pass, and the two-component full-state output. It does not train the network; training belongs to Phase 5.
@@ -318,7 +319,7 @@ The training demo also saves:
 Run it with:
 
 ```powershell
-python scripts\phase5_training_demo.py
+python scripts\model_baseline\phase5_training_demo.py
 ```
 
 ---
@@ -340,6 +341,28 @@ Before committing Phase 6, explain:
 * Whether the model is interpolating within the training distribution or generalizing to an unseen condition.
 * How the numerical metrics relate to visible trajectory differences.
 * What limitations remain in a purely data-driven approximation.
+
+---
+
+## Phase 7: Baseline Run Artifacts
+
+Run the current full-state supervised baseline with:
+
+```powershell
+python scripts\model_baseline\run_baseline.py
+```
+
+Each run creates the next unused `runs/baseline_runs_N/` folder. It saves the generated dataset and checkpoint, training and validation MSE versus epoch, one validation trajectory plot, one preselected test trajectory plot, and `baseline_test_error_data.csv`. The CSV contains separate angle and angular-velocity MAE/RMSE for every test trajectory, followed by the mean and standard deviation across test trajectories. The checkpoint contains the model state selected by the lowest validation MSE. Test data is used only for final metrics and the preselected example plot.
+
+Experiment 1 changes the training initial conditions from a diagonal pairing to a full grid: 8 initial-angle values crossed with 4 initial-angular-velocity values, for 32 distinct combinations. The torque slopes are balanced across the same three values and assigned reproducibly. The validation and test trajectories, model, training settings, and simulation horizon remain unchanged from Experiment 0 so that the effect of broader training coverage can be checked directly.
+
+Run Experiment 2 with:
+
+```powershell
+python scripts\model_baseline\run_experiment_2.py
+```
+
+Experiment 2 uses 100 trajectories total: 80 training, 10 validation, and 10 test. Its training initial conditions span a 10-by-8 grid over -1.4 to 1.4 rad and -1.0 to 1.0 rad/s. It retains the first four Experiment 1 test cases and adds six wider-range test cases; `Experiment 2 Data.md` records the exact conditions and changes from Experiment 1. The existing model, optimizer settings, seed, torque family, and 10-second simulation duration are unchanged.
 
 ---
 

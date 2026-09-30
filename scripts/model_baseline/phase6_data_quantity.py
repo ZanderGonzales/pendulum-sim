@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pendulum_sim.experiments import run_data_quantity_comparison
+from model_baseline.experiments import run_data_quantity_comparison
 
 
 def main() -> None:

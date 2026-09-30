@@ -1,7 +1,7 @@
 import torch
 
 from pendulum_sim.data import SimulationConfig, generate_dataset
-from pendulum_sim.model import PendulumStateNetwork, Standardizer
+from model_baseline.model import PendulumStateNetwork, Standardizer
 from pendulum_sim.simulator import PendulumParameters
 
 

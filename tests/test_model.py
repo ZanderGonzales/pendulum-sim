@@ -1,6 +1,6 @@
 import torch
 
-from pendulum_sim.model import PendulumStateNetwork, Standardizer
+from model_baseline.model import PendulumStateNetwork, Standardizer
 
 
 def test_standardizer_round_trip_and_constant_feature() -> None:

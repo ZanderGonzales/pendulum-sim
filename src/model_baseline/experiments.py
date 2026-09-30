@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from itertools import product
 import time
 from pathlib import Path
 
@@ -9,10 +10,10 @@ import numpy as np
 import torch
 
 from pendulum_sim.data import SimulationConfig, generate_dataset
-from pendulum_sim.evaluation import evaluate_model
-from pendulum_sim.model import PendulumStateNetwork
+from model_baseline.evaluation import evaluate_model
+from model_baseline.model import PendulumStateNetwork
 from pendulum_sim.simulator import PendulumParameters
-from pendulum_sim.training import (
+from model_baseline.training import (
     TrajectorySplit,
     train_supervised,
     tensors_for_trajectories,
@@ -182,6 +183,83 @@ def build_data_quantity_cases(
         }
         for size in train_sizes
     ]
+
+
+def build_baseline_experiment_case(seed: int = 7) -> dict:
+    """Create a baseline case with independent, grid-spread initial conditions."""
+    params = PendulumParameters(mass=1.0, length=1.0, gravity=9.81, damping=0.1)
+    theta_values = np.linspace(-0.7, 0.7, 8).tolist()
+    omega_values = np.linspace(-0.4, 0.4, 4).tolist()
+    initial_condition_pairs = list(product(theta_values, omega_values))
+
+    torque_slopes = np.resize(np.asarray([-0.12, 0.0, 0.12]), len(initial_condition_pairs))
+    np.random.default_rng(seed).shuffle(torque_slopes)
+    train_configs = _build_configs(
+        params,
+        theta_values=[pair[0] for pair in initial_condition_pairs],
+        omega_values=[pair[1] for pair in initial_condition_pairs],
+        torque_slopes=[float(slope) for slope in torque_slopes],
+    )
+
+    prior_case = build_data_quantity_cases(train_sizes=(32,))[0]
+    return {
+        "name": "baseline_grid",
+        "train_configs": train_configs,
+        "validation_configs": prior_case["validation_configs"],
+        "test_configs": prior_case["test_configs"],
+        "changes_from_previous": [
+            "Experiment 0 paired 32 angle values with 32 velocity values by matching list index, so its training conditions followed a single diagonal through the angle/velocity space.",
+            "Experiment 1 uses the Cartesian product of 8 angle values and 4 velocity values, giving 32 combinations across the two-dimensional initial-condition space.",
+            "The linear torque family and the balanced slope values (-0.12, 0.0, and 0.12 N m/s) are unchanged; Experiment 1 assigns them in a reproducible seeded shuffle instead of the prior cyclic order.",
+            "The validation and test conditions, physical parameters, duration, time step, network, epoch count, learning rate, and training seed are unchanged.",
+            "The purpose of this change is to test whether broader combinations of initial conditions help the model reproduce trajectories it did not train on.",
+        ],
+    }
+
+
+def build_extended_baseline_experiment_case(seed: int = 7) -> dict:
+    """Create Experiment 2 with more trajectories and wider initial conditions."""
+    params = PendulumParameters(mass=1.0, length=1.0, gravity=9.81, damping=0.1)
+    theta_values = np.linspace(-1.4, 1.4, 10).tolist()
+    omega_values = np.linspace(-1.0, 1.0, 8).tolist()
+    initial_condition_pairs = list(product(theta_values, omega_values))
+
+    torque_slopes = np.resize(np.asarray([-0.12, 0.0, 0.12]), len(initial_condition_pairs))
+    np.random.default_rng(seed).shuffle(torque_slopes)
+    train_configs = _build_configs(
+        params,
+        theta_values=[pair[0] for pair in initial_condition_pairs],
+        omega_values=[pair[1] for pair in initial_condition_pairs],
+        torque_slopes=[float(slope) for slope in torque_slopes],
+    )
+
+    experiment_one = build_baseline_experiment_case(seed=seed)
+    validation_configs = experiment_one["validation_configs"] + _build_configs(
+        params,
+        theta_values=[-1.25, -0.95, -0.65, -0.25, 0.35, 1.25],
+        omega_values=[0.75, -0.65, 0.85, -0.85, 0.55, -0.55],
+        torque_slopes=[0.06, -0.10, 0.02, 0.09, -0.04, 0.12],
+    )
+    test_configs = experiment_one["test_configs"] + _build_configs(
+        params,
+        theta_values=[-1.25, -0.95, -0.35, 0.35, 0.95, 1.25],
+        omega_values=[0.75, -0.65, 0.85, -0.85, 0.55, -0.55],
+        torque_slopes=[0.10, -0.10, 0.08, -0.09, 0.06, -0.11],
+    )
+
+    return {
+        "name": "baseline_wide_grid",
+        "train_configs": train_configs,
+        "validation_configs": validation_configs,
+        "test_configs": test_configs,
+        "changes_from_previous": [
+            "Training trajectories increased from 32 to 80; validation and test trajectories increased from 4 each to 10 each.",
+            "Training initial angles widened from -0.7 to 0.7 rad to -1.4 to 1.4 rad, and initial angular velocities widened from -0.4 to 0.4 rad/s to -1.0 to 1.0 rad/s.",
+            "Training initial conditions use a 10-by-8 Cartesian grid; the linear torque family and balanced slope values are retained.",
+            "The first four test trajectories are unchanged from Experiment 1; six additional validation and six additional test conditions cover the wider range.",
+            "Physical parameters, duration, time step, model, epoch count, learning rate, and seed are unchanged.",
+        ],
+    }
 
 
 def summarize_case_metrics(

@@ -2,9 +2,13 @@ import numpy as np
 import torch
 
 from pendulum_sim.data import SimulationConfig, generate_dataset
-from pendulum_sim.evaluation import evaluate_model, plot_trajectory_prediction
+from model_baseline.evaluation import (
+    evaluate_model,
+    evaluate_trajectory_metrics,
+    plot_trajectory_prediction,
+)
 from pendulum_sim.simulator import PendulumParameters
-from pendulum_sim.training import save_checkpoint, split_trajectory_indices, train_supervised
+from model_baseline.training import save_checkpoint, split_trajectory_indices, train_supervised
 
 
 def make_dataset():
@@ -65,3 +69,39 @@ def test_training_records_losses_and_evaluates_physical_units(tmp_path) -> None:
     assert checkpoint["training_config"]["epochs"] == 3
     assert prediction_plot_path.exists()
     assert prediction_plot_path.stat().st_size > 0
+
+
+def test_training_returns_lowest_validation_loss_checkpoint() -> None:
+    dataset = make_dataset()
+    result = train_supervised(dataset, epochs=8, seed=4)
+    inputs, targets = dataset.as_tensors()
+    trajectory_indices = result.split.validation
+    num_times = dataset.theta.shape[1]
+    row_indices = np.concatenate(
+        [np.arange(index * num_times, (index + 1) * num_times) for index in trajectory_indices]
+    )
+    rows = torch.as_tensor(row_indices, dtype=torch.long)
+    validation_inputs = result.input_scaler.transform(inputs[rows])
+    validation_targets = result.target_scaler.transform(targets[rows])
+    result.model.eval()
+    with torch.no_grad():
+        final_validation_loss = torch.nn.functional.mse_loss(
+            result.model(validation_inputs), validation_targets
+        ).item()
+
+    assert np.isclose(final_validation_loss, min(result.history["validation_loss"]), atol=1e-6)
+
+
+def test_evaluate_trajectory_metrics_reports_both_states_separately() -> None:
+    dataset = make_dataset()
+    result = train_supervised(dataset, epochs=2, seed=4)
+    metrics = evaluate_trajectory_metrics(
+        dataset,
+        result.model,
+        result.split.test,
+        result.input_scaler,
+        result.target_scaler,
+    )
+
+    assert len(metrics) == len(result.split.test)
+    assert {"theta_mae", "theta_rmse", "omega_mae", "omega_rmse"} <= metrics[0].keys()

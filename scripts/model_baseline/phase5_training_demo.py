@@ -1,7 +1,7 @@
 from pendulum_sim.data import SimulationConfig, generate_dataset
-from pendulum_sim.evaluation import evaluate_model, plot_training_history, plot_trajectory_prediction
+from model_baseline.evaluation import evaluate_model, plot_training_history, plot_trajectory_prediction
 from pendulum_sim.simulator import PendulumParameters
-from pendulum_sim.training import save_checkpoint, train_supervised
+from model_baseline.training import save_checkpoint, train_supervised
 
 
 def main() -> None:

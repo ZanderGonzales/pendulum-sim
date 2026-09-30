@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pendulum_sim.experiments import run_experiment_suite
+from model_baseline.experiments import run_experiment_suite
 
 
 def main() -> None:

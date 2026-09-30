@@ -7,7 +7,7 @@ import numpy as np
 import torch
 
 from pendulum_sim.data import SimulationDataset
-from pendulum_sim.training import tensors_for_trajectories
+from model_baseline.training import tensors_for_trajectories
 
 
 def evaluate_model(
@@ -32,6 +32,38 @@ def evaluate_model(
         "rmse": float(squared_error.mean().sqrt().item()),
         "max_absolute_error": float(absolute_error.max().item()),
     }
+
+
+def evaluate_trajectory_metrics(
+    dataset: SimulationDataset,
+    model: torch.nn.Module,
+    trajectory_indices: np.ndarray,
+    input_scaler,
+    target_scaler,
+) -> list[dict[str, float | int]]:
+    """Return separate angle and angular-velocity metrics for each trajectory."""
+    metrics = []
+    model.eval()
+    with torch.no_grad():
+        for trajectory_index in trajectory_indices:
+            inputs, targets = tensors_for_trajectories(
+                dataset,
+                np.asarray([trajectory_index], dtype=int),
+            )
+            predictions = target_scaler.inverse_transform(
+                model(input_scaler.transform(inputs))
+            )
+            error = (predictions - targets).abs()
+            metrics.append(
+                {
+                    "trajectory_index": int(trajectory_index),
+                    "theta_mae": float(error[:, 0].mean().item()),
+                    "theta_rmse": float(error[:, 0].square().mean().sqrt().item()),
+                    "omega_mae": float(error[:, 1].mean().item()),
+                    "omega_rmse": float(error[:, 1].square().mean().sqrt().item()),
+                }
+            )
+    return metrics
 
 
 def plot_training_history(history: dict[str, list[float]], save_path: str | Path) -> None:

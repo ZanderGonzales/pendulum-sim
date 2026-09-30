@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -8,7 +9,7 @@ import torch
 from torch import nn
 
 from pendulum_sim.data import SimulationDataset
-from pendulum_sim.model import PendulumStateNetwork, Standardizer
+from model_baseline.model import PendulumStateNetwork, Standardizer
 
 
 @dataclass(frozen=True)
@@ -28,6 +29,8 @@ class TrainingResult:
     optimizer_state: dict
     seed: int
     training_config: dict[str, float]
+    best_epoch: int
+    best_validation_loss: float
 
 
 def split_trajectory_indices(
@@ -113,8 +116,12 @@ def train_supervised(
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     loss_function = nn.MSELoss()
     history = {"train_loss": [], "validation_loss": []}
+    best_validation_loss = float("inf")
+    best_epoch = 0
+    best_model_state = None
+    best_optimizer_state = None
 
-    for _ in range(epochs):
+    for epoch in range(epochs):
         model.train()
         optimizer.zero_grad()
         train_predictions = model(train_inputs)
@@ -128,7 +135,18 @@ def train_supervised(
             validation_loss = loss_function(validation_predictions, validation_targets)
 
         history["train_loss"].append(float(train_loss.item()))
-        history["validation_loss"].append(float(validation_loss.item()))
+        validation_loss_value = float(validation_loss.item())
+        history["validation_loss"].append(validation_loss_value)
+        if validation_loss_value < best_validation_loss:
+            best_validation_loss = validation_loss_value
+            best_epoch = epoch + 1
+            best_model_state = {
+                name: value.detach().clone()
+                for name, value in model.state_dict().items()
+            }
+            best_optimizer_state = copy.deepcopy(optimizer.state_dict())
+
+    model.load_state_dict(best_model_state)
 
     training_config = {
         "epochs": epochs,
@@ -142,9 +160,11 @@ def train_supervised(
         target_scaler,
         split,
         history,
-        optimizer.state_dict(),
+        best_optimizer_state,
         seed,
         training_config,
+        best_epoch,
+        best_validation_loss,
     )
 
 
@@ -166,6 +186,8 @@ def save_checkpoint(result: TrainingResult, path: str | Path) -> None:
             "history": result.history,
             "seed": result.seed,
             "training_config": result.training_config,
+            "best_epoch": result.best_epoch,
+            "best_validation_loss": result.best_validation_loss,
         },
         output,
     )

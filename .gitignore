@@ -8,7 +8,6 @@ __pycache__/
 
 # Generated simulation data and experiment outputs
 data/
-runs/
 
 # Local editor and OS files
 .vscode/

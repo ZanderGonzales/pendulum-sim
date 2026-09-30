@@ -284,6 +284,41 @@ Before committing Phase 6, explain:
 
 ---
 
+## Phase 7: Increase Scope Architecture
+
+Now that there is a basic model running the goal is to do more, working with the current architecture and code as a starting point, but also changing some of how it works.
+
+Goals:
+* Make it so that all numerical simulation scripts are kept in a different folder from all model scripts, this will make it easier to change what physical model I am testing in the future, as I may want to solve a unicycle physical system
+* Put all current model architecture in a folder referred to as model_baseline, as I will soon want to create a new model that trains off of the residual instead of the full system state, and I want this to be able to be run seperately so that they can be compared
+* Make it so that tests that are currently run are called baseline_learning_curves (this graph contains Training MSE vs Epochs and Validation MSE vs Epochs. Validation will be testing on generated trajectories that were held out from training data, 10% of the total trajectories), and baseline_training_comparison (this will hold a graph that shows how the lowest validation MSE model compares with the numerical simulation after all training, and will include theta_dot and theta vs time for 10 seconds using a validation trajectory) and baseline_test_comparison (this will be a graph for one test trajectory selected before training, not selected based on model performance). Finally create a table called baseline_test_error_data that reports angle and angular-velocity MAE and RMSE for each test trajectory, along with the mean and standard deviation of each metric across all test trajectories.
+* Store all graphs and tables in a folder called baseline_runs_0, and increase the subscript by 1 each time a new experiment is run
+* Create a file in the runs folder (eg. baseline_runs_0) called "Experiment 0 Data" (with the number moving up by one to match the subscript in the runs folder) that details exactly where all data can be found and what it represents, as well as an explanation of the general flow of data, including how much data is being included and trained on. Make this part systematic and very simple to read so that others can understand. This section should include:
+    * how many trajectories are in the dataset,
+    * how many time points per trajectory,
+    * that training/validation/test are split by trajectory, and have a 80/10/10 ratio
+    * what the exact torque families are,
+    * where each generated plot/checkpoint comes from and where they are stored.
+    * a section describing if anything changed with respect to the code between the last experiment and this one
+
+Use multiple test trajectories so that variability across trajectories can be summarized. If 10% of a small dataset would leave too few test trajectories, reserve a larger test set and document the resulting split.
+
+This stage is only for setting up future changes, not creating or trying to run and compare new models. Make minimal changes to functional code while creating architectural splits that allow for other models or physical systems to be run in the future using this same framework. The residual model as well as comparison will be completed in future stages, not this one.
+
+## Phase 8: Residual Model
+
+The goal is to create a similar NN and model as the last model, but by calculating the residual, which is a one-step state change as opposed to finding the next state in its entirety. The one-step state change is $\Delta x_k = x_{k+1} - x_k$. The model predicts this change, then reconstructs the next state as $\hat{x}_{k+1} = x_k + \widehat{\Delta x}_k$.
+
+Use a fixed time step of 0.01 seconds. The model inputs are the current state \(x_k = [\theta_k, \dot{\theta}_k]\) and the known applied torque at the start, midpoint, and end of the time step. The model outputs \(\Delta x_k = [\Delta\theta_k, \Delta\dot{\theta}_k]\). During training, use simulator states as the current state and the simulator's next-step state change as the target. During evaluation, perform a rollout: use each predicted state as the current state for the next step, and compare the resulting full trajectory with the simulator.
+
+All architecture and procedures should mirror the baseline model, with the word residual replacing the word baseline in all files (eg. model_residual as the top level folder and residual_runs_0 holding all graphs and tables). All test procedures should be the same, and it should be trained on the exact same training, validation, and test trajectories as the baseline model, with similar graphs and per-trajectory error tables being made. Include a section of the README that details all of the same data as was created for the baseline model.
+
+## Phase 9: Model Comparison
+
+Compare the baseline and residual models on the same test trajectories. Manually compare the example graphs, and compare the per-trajectory angle and angular-velocity MAE and RMSE, including their mean and standard deviation across trajectories. Use validation data to select each model's checkpoint; do not use test results to select models or training settings. Focus on how much data each model needs to predict the pendulum motion accurately and consistently.
+
+---
+
 # Experimental Goals
 
 A major goal of this project is to understand the relationship between the amount of available data and the model's ability to reproduce the pendulum dynamics.
