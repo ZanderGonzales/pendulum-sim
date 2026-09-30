@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import argparse
 from pathlib import Path
 
 import numpy as np
@@ -11,7 +12,12 @@ from model_baseline.evaluation import (
     plot_trajectory_prediction,
 )
 from model_baseline.experiments import build_baseline_experiment_case
-from model_baseline.training import TrajectorySplit, save_checkpoint, train_supervised
+from model_baseline.training import (
+    TrajectorySplit,
+    save_checkpoint,
+    save_training_log,
+    train_supervised,
+)
 from pendulum_sim.data import generate_dataset, save_dataset
 
 
@@ -84,7 +90,7 @@ def save_test_error_table(
         writer.writerows(rows)
 
 
-def save_experiment_data_note(case: dict, output_dir: Path) -> None:
+def save_experiment_data_note(case: dict, result, output_dir: Path) -> None:
     """Write a compact description of the generated experiment and outputs."""
     run_number = output_dir.name.removeprefix("baseline_runs_")
     train_configs = case["train_configs"]
@@ -128,15 +134,33 @@ def save_experiment_data_note(case: dict, output_dir: Path) -> None:
         + describe_conditions(test_configs)
         + ".",
         "- Model inputs: time, initial angle, initial angular velocity, and applied torque; targets: angle and angular velocity.",
+        f"- Training configuration: batch_size={result.training_config['batch_size']}, "
+        f"max_epochs={result.training_config['max_epochs']}, "
+        f"max_optimizer_steps={result.training_config['max_optimizer_steps']}, "
+        f"learning_rate={result.training_config['learning_rate']}, "
+        f"scheduler=ReduceLROnPlateau(factor={result.training_config['scheduler_factor']}, "
+        f"patience={result.training_config['scheduler_patience']}, "
+        f"min_lr={result.training_config['min_learning_rate']}).",
+        f"- Actual training: {int(result.history['optimizer_step'][-1])} optimizer updates, "
+        f"{int(result.history['samples_seen'][-1])} training samples processed.",
         "",
-        f"## Changes From Experiment {int(run_number) - 1}",
+        f"## {case['changes_heading']}",
         "",
         *[f"- {change}" for change in case["changes_from_previous"]],
+        "",
+        "## Training Procedure",
+        "",
+        "- Training uses shuffled, non-dropping mini-batches; validation is evaluated in its original order after each epoch.",
+        f"- The optimizer-step target was {result.training_config['max_optimizer_steps']}; this run completed "
+        f"{int(result.history['optimizer_step'][-1])} updates over {len(result.history['epoch'])} complete epochs, "
+        f"processing {int(result.history['samples_seen'][-1])} training samples.",
+        "- ReduceLROnPlateau monitors validation MSE once per epoch and applies the configured factor, patience, and minimum learning rate.",
         "",
         "## Files",
         "",
         "- `simulation_dataset.npz`: all generated trajectories and simulation metadata.",
         "- `baseline_checkpoint.pt`: model checkpoint selected by lowest validation MSE.",
+        "- `baseline_training_log.csv`: per-epoch update count, samples seen, learning rate, training loss, and validation loss.",
         "- `baseline_learning_curves.png`: training and validation MSE versus epoch.",
         "- `baseline_training_comparison.png`: prediction versus simulator on a validation trajectory.",
         "- `baseline_test_comparison.png`: prediction versus simulator on the preselected first test trajectory.",
@@ -152,8 +176,13 @@ def save_experiment_data_note(case: dict, output_dir: Path) -> None:
 def run_baseline_case(
     case: dict,
     *,
-    epochs: int = 300,
+    max_epochs: int = 100,
+    max_optimizer_steps: int = 5000,
+    batch_size: int = 256,
     learning_rate: float = 1e-3,
+    scheduler_factor: float = 0.5,
+    scheduler_patience: int = 10,
+    min_learning_rate: float = 1e-6,
     seed: int = 7,
     duration: float = 10.0,
     time_step: float = 0.01,
@@ -176,8 +205,13 @@ def run_baseline_case(
     )
     result = train_supervised(
         dataset,
-        epochs=epochs,
+        max_epochs=max_epochs,
+        max_optimizer_steps=max_optimizer_steps,
+        batch_size=batch_size,
         learning_rate=learning_rate,
+        scheduler_factor=scheduler_factor,
+        scheduler_patience=scheduler_patience,
+        min_learning_rate=min_learning_rate,
         train_fraction=0.8,
         validation_fraction=0.1,
         seed=seed,
@@ -188,6 +222,7 @@ def run_baseline_case(
     output_dir.mkdir(parents=True, exist_ok=False)
     save_dataset(dataset, output_dir / "simulation_dataset.npz")
     save_checkpoint(result, output_dir / "baseline_checkpoint.pt")
+    save_training_log(result, output_dir / "baseline_training_log.csv")
     plot_training_history(
         result.history,
         output_dir / "baseline_learning_curves.png",
@@ -214,7 +249,7 @@ def run_baseline_case(
         result,
         output_dir / "baseline_test_error_data.csv",
     )
-    save_experiment_data_note(case, output_dir)
+    save_experiment_data_note(case, result, output_dir)
 
     print(f"Run directory: {output_dir}")
     print(
@@ -223,13 +258,38 @@ def run_baseline_case(
     )
     print(f"Samples per trajectory: {num_steps + 1}")
     print(f"Best validation MSE: {result.best_validation_loss:.6f} at epoch {result.best_epoch}")
+    print(f"Optimizer updates: {int(result.history['optimizer_step'][-1])}")
+    print(f"Training samples seen: {int(result.history['samples_seen'][-1])}")
     print("Saved dataset, checkpoint, comparison plots, learning curves, and test error table.")
 
 
+def add_training_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--batch-size", type=int, default=256)
+    parser.add_argument("--max-epochs", type=int, default=100)
+    parser.add_argument("--max-optimizer-steps", type=int, default=5000)
+    parser.add_argument("--learning-rate", type=float, default=1e-3)
+    parser.add_argument("--scheduler-factor", type=float, default=0.5)
+    parser.add_argument("--scheduler-patience", type=int, default=10)
+    parser.add_argument("--min-learning-rate", type=float, default=1e-6)
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Train the baseline pendulum model.")
+    add_training_arguments(parser)
+    options = parser.parse_args()
     seed = 7
     case = build_baseline_experiment_case(seed=seed)
-    run_baseline_case(case, seed=seed)
+    run_baseline_case(
+        case,
+        max_epochs=options.max_epochs,
+        max_optimizer_steps=options.max_optimizer_steps,
+        batch_size=options.batch_size,
+        learning_rate=options.learning_rate,
+        scheduler_factor=options.scheduler_factor,
+        scheduler_patience=options.scheduler_patience,
+        min_learning_rate=options.min_learning_rate,
+        seed=seed,
+    )
 
 
 if __name__ == "__main__":

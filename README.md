@@ -352,7 +352,15 @@ Run the current full-state supervised baseline with:
 python scripts\model_baseline\run_baseline.py
 ```
 
-Each run creates the next unused `runs/baseline_runs_N/` folder. It saves the generated dataset and checkpoint, training and validation MSE versus epoch, one validation trajectory plot, one preselected test trajectory plot, and `baseline_test_error_data.csv`. The CSV contains separate angle and angular-velocity MAE/RMSE for every test trajectory, followed by the mean and standard deviation across test trajectories. The checkpoint contains the model state selected by the lowest validation MSE. Test data is used only for final metrics and the preselected example plot.
+Each run creates the next unused `runs/baseline_runs_N/` folder. It saves the generated dataset and checkpoint, training and validation MSE versus epoch, one validation trajectory plot, one preselected test trajectory plot, `baseline_test_error_data.csv`, and `baseline_training_log.csv`. The test-error CSV contains separate angle and angular-velocity MAE/RMSE for every test trajectory, followed by the mean and standard deviation across test trajectories. The training log records epoch, optimizer step, samples seen, learning rate after the scheduler update, training loss, and validation loss. The checkpoint contains the model state selected by the lowest validation MSE. Test data is used only for final metrics and the preselected example plot.
+
+Training uses shuffled mini-batches of 256 samples by default. This is appropriate for the current baseline dataset: 32 training trajectories with 1001 samples each produce 32,032 training samples, or 126 batches per epoch (the final batch is retained). The default target is 5000 optimizer updates, with a maximum of 100 epochs. The step target is checked at epoch boundaries so every completed epoch uses each training sample exactly once; with this dataset the default run reaches about 5040 updates in 40 complete epochs. Training stops when either the update target or epoch ceiling is reached.
+
+The learning rate starts at `0.001`. `ReduceLROnPlateau` monitors validation MSE once per epoch, reducing the learning rate by a factor of `0.5` after 10 epochs without improvement, down to `1e-6`. Validation is not shuffled, and normalization continues to be fit using training samples only. Batch size, update budget, epoch ceiling, learning rate, and scheduler settings can be changed through the runner's command-line options, for example:
+
+```powershell
+python scripts\model_baseline\run_baseline.py --batch-size 128 --max-optimizer-steps 6000
+```
 
 Experiment 1 changes the training initial conditions from a diagonal pairing to a full grid: 8 initial-angle values crossed with 4 initial-angular-velocity values, for 32 distinct combinations. The torque slopes are balanced across the same three values and assigned reproducibly. The validation and test trajectories, model, training settings, and simulation horizon remain unchanged from Experiment 0 so that the effect of broader training coverage can be checked directly.
 

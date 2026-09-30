@@ -46,7 +46,7 @@ def main() -> None:
     )
     result = train_supervised(
         training_dataset,
-        epochs=epochs,
+        max_epochs=epochs,
         learning_rate=learning_rate,
         seed=seed,
         split=split,

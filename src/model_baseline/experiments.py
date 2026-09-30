@@ -204,6 +204,7 @@ def build_baseline_experiment_case(seed: int = 7) -> dict:
     prior_case = build_data_quantity_cases(train_sizes=(32,))[0]
     return {
         "name": "baseline_grid",
+        "changes_heading": "Changes From Experiment 0",
         "train_configs": train_configs,
         "validation_configs": prior_case["validation_configs"],
         "test_configs": prior_case["test_configs"],
@@ -249,6 +250,7 @@ def build_extended_baseline_experiment_case(seed: int = 7) -> dict:
 
     return {
         "name": "baseline_wide_grid",
+        "changes_heading": "Changes From Experiment 1",
         "train_configs": train_configs,
         "validation_configs": validation_configs,
         "test_configs": test_configs,
@@ -384,7 +386,9 @@ def run_data_quantity_comparison(
     *,
     duration: float = 2.0,
     num_steps: int = 80,
-    epochs: int = 100,
+    max_epochs: int = 100,
+    max_optimizer_steps: int = 5000,
+    batch_size: int = 256,
     learning_rate: float = 1e-3,
     seed: int = 17,
 ) -> list[dict]:
@@ -411,7 +415,9 @@ def run_data_quantity_comparison(
         fit_started = time.perf_counter()
         trained = train_supervised(
             training_dataset,
-            epochs=epochs,
+            max_epochs=max_epochs,
+            max_optimizer_steps=max_optimizer_steps,
+            batch_size=batch_size,
             learning_rate=learning_rate,
             seed=seed,
             split=split,
@@ -429,7 +435,9 @@ def run_data_quantity_comparison(
                 "training_trajectories": num_train,
                 "validation_trajectories": num_validation,
                 "test_trajectories": len(case["test_configs"]),
-                "epochs": epochs,
+                "max_epochs": max_epochs,
+                "max_optimizer_steps": max_optimizer_steps,
+                "batch_size": batch_size,
                 "learning_rate": learning_rate,
                 "seed": seed,
                 "training_seconds": training_seconds,
@@ -465,7 +473,9 @@ def run_experiment_case(
     *,
     duration: float = 2.0,
     num_steps: int = 80,
-    epochs: int = 60,
+    max_epochs: int = 60,
+    max_optimizer_steps: int = 5000,
+    batch_size: int = 256,
     learning_rate: float = 1e-3,
     seed: int = 7,
 ) -> dict:
@@ -474,7 +484,9 @@ def run_experiment_case(
     test_dataset = generate_dataset(case["test_configs"], duration=duration, num_steps=num_steps)
     result = train_supervised(
         train_dataset,
-        epochs=epochs,
+        max_epochs=max_epochs,
+        max_optimizer_steps=max_optimizer_steps,
+        batch_size=batch_size,
         learning_rate=learning_rate,
         seed=seed,
     )

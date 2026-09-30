@@ -18,7 +18,7 @@ def main() -> None:
         for index in range(10)
     ]
     dataset = generate_dataset(configs, duration=2.0, num_steps=100)
-    result = train_supervised(dataset, epochs=300, seed=7)
+    result = train_supervised(dataset, max_epochs=300, seed=7)
     metrics = evaluate_model(
         dataset,
         result.model,

@@ -1,3 +1,5 @@
+import csv
+
 import numpy as np
 import torch
 
@@ -8,7 +10,13 @@ from model_baseline.evaluation import (
     plot_trajectory_prediction,
 )
 from pendulum_sim.simulator import PendulumParameters
-from model_baseline.training import save_checkpoint, split_trajectory_indices, train_supervised
+from model_baseline.training import (
+    make_training_loader,
+    save_checkpoint,
+    save_training_log,
+    split_trajectory_indices,
+    train_supervised,
+)
 
 
 def make_dataset():
@@ -37,7 +45,7 @@ def test_split_uses_disjoint_complete_trajectories() -> None:
 
 def test_training_records_losses_and_evaluates_physical_units(tmp_path) -> None:
     dataset = make_dataset()
-    result = train_supervised(dataset, epochs=3, seed=4)
+    result = train_supervised(dataset, max_epochs=3, seed=4)
     metrics = evaluate_model(
         dataset,
         result.model,
@@ -66,14 +74,14 @@ def test_training_records_losses_and_evaluates_physical_units(tmp_path) -> None:
     assert checkpoint_path.exists()
     checkpoint = torch.load(checkpoint_path, weights_only=False)
     assert checkpoint["seed"] == 4
-    assert checkpoint["training_config"]["epochs"] == 3
+    assert checkpoint["training_config"]["max_epochs"] == 3
     assert prediction_plot_path.exists()
     assert prediction_plot_path.stat().st_size > 0
 
 
 def test_training_returns_lowest_validation_loss_checkpoint() -> None:
     dataset = make_dataset()
-    result = train_supervised(dataset, epochs=8, seed=4)
+    result = train_supervised(dataset, max_epochs=8, seed=4)
     inputs, targets = dataset.as_tensors()
     trajectory_indices = result.split.validation
     num_times = dataset.theta.shape[1]
@@ -94,7 +102,7 @@ def test_training_returns_lowest_validation_loss_checkpoint() -> None:
 
 def test_evaluate_trajectory_metrics_reports_both_states_separately() -> None:
     dataset = make_dataset()
-    result = train_supervised(dataset, epochs=2, seed=4)
+    result = train_supervised(dataset, max_epochs=2, seed=4)
     metrics = evaluate_trajectory_metrics(
         dataset,
         result.model,
@@ -105,3 +113,68 @@ def test_evaluate_trajectory_metrics_reports_both_states_separately() -> None:
 
     assert len(metrics) == len(result.split.test)
     assert {"theta_mae", "theta_rmse", "omega_mae", "omega_rmse"} <= metrics[0].keys()
+
+
+def test_training_loader_shuffles_aligned_samples_and_keeps_final_batch() -> None:
+    inputs = torch.arange(32, dtype=torch.float32).reshape(-1, 1)
+    targets = torch.cat([inputs, inputs * 3.0], dim=1)
+    loader = make_training_loader(inputs, targets, batch_size=7, seed=11)
+    observed_inputs = []
+    observed_targets = []
+    batch_sizes = []
+
+    for batch_inputs, batch_targets in loader:
+        observed_inputs.append(batch_inputs)
+        observed_targets.append(batch_targets)
+        batch_sizes.append(batch_inputs.shape[0])
+
+    shuffled_inputs = torch.cat(observed_inputs)
+    shuffled_targets = torch.cat(observed_targets)
+    assert batch_sizes == [7, 7, 7, 7, 4]
+    assert sorted(shuffled_inputs[:, 0].tolist()) == list(range(32))
+    assert torch.equal(shuffled_targets[:, 0], shuffled_inputs[:, 0])
+    assert torch.equal(shuffled_targets[:, 1], shuffled_inputs[:, 0] * 3.0)
+    assert not torch.equal(shuffled_inputs[:, 0], inputs[:, 0])
+
+
+def test_training_records_updates_samples_learning_rate_and_losses() -> None:
+    dataset = make_dataset()
+    result = train_supervised(
+        dataset,
+        max_epochs=5,
+        max_optimizer_steps=4,
+        batch_size=16,
+        seed=4,
+    )
+    training_sample_count = len(result.split.train) * dataset.theta.shape[1]
+
+    assert result.history["epoch"] == [1.0]
+    assert result.history["optimizer_step"] == [4.0]
+    assert result.history["samples_seen"] == [float(training_sample_count)]
+    assert len(result.history["learning_rate"]) == 1
+    assert len(result.history["train_loss"]) == 1
+    assert len(result.history["validation_loss"]) == 1
+    assert result.training_config["batch_size"] == 16
+    assert result.training_config["max_optimizer_steps"] == 4
+    assert result.training_config["scheduler_factor"] == 0.5
+    assert result.training_config["scheduler_patience"] == 10
+    assert result.training_config["min_learning_rate"] == 1e-6
+
+
+def test_training_log_saves_required_budget_fields(tmp_path) -> None:
+    result = train_supervised(make_dataset(), max_epochs=1, batch_size=16, seed=4)
+    log_path = tmp_path / "training_log.csv"
+
+    save_training_log(result, log_path)
+
+    with log_path.open(newline="", encoding="utf-8") as log_file:
+        rows = list(csv.DictReader(log_file))
+    assert set(rows[0]) == {
+        "epoch",
+        "optimizer_step",
+        "samples_seen",
+        "learning_rate",
+        "training_loss",
+        "validation_loss",
+    }
+    assert int(rows[0]["optimizer_step"]) == result.history["optimizer_step"][-1]
