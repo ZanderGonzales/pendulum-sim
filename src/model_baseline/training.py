@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from torch import nn
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, Sampler, TensorDataset
 
 from pendulum_sim.data import SimulationDataset
 from model_baseline.model import PendulumStateNetwork, Standardizer
@@ -30,33 +30,69 @@ class TrainingResult:
     history: dict[str, list[float]]
     optimizer_state: dict
     seed: int
-    training_config: dict[str, float | int]
+    training_config: dict[str, float | int | None]
     best_epoch: int
     best_validation_loss: float
     scheduler_state: dict
 
 
+class ShuffledBalancedBatchSampler(Sampler[list[int]]):
+    """Shuffle sample indices into an exact number of near-equal batches."""
+
+    def __init__(self, sample_count: int, batch_count: int, seed: int) -> None:
+        if sample_count <= 0:
+            raise ValueError("sample_count must be positive")
+        if batch_count <= 0 or batch_count > sample_count:
+            raise ValueError("batch_count must be positive and no greater than sample_count")
+        self.sample_count = sample_count
+        self.batch_count = batch_count
+        self.seed = seed
+        self.epoch = 0
+
+    def __iter__(self):
+        generator = torch.Generator()
+        generator.manual_seed(self.seed + self.epoch)
+        self.epoch += 1
+        shuffled_indices = torch.randperm(self.sample_count, generator=generator).tolist()
+        base_size, extra_samples = divmod(self.sample_count, self.batch_count)
+        start = 0
+        for batch_index in range(self.batch_count):
+            batch_size = base_size + int(batch_index < extra_samples)
+            end = start + batch_size
+            yield shuffled_indices[start:end]
+            start = end
+
+    def __len__(self) -> int:
+        return self.batch_count
+
+
 def make_training_loader(
     inputs: torch.Tensor,
     targets: torch.Tensor,
-    batch_size: int,
+    batch_size: int | None = 256,
+    batches_per_epoch: int | None = None,
     seed: int = 0,
 ) -> DataLoader:
     """Create shuffled batches without separating inputs from their targets."""
-    if batch_size <= 0:
-        raise ValueError("batch_size must be positive")
     if inputs.shape[0] != targets.shape[0]:
         raise ValueError("inputs and targets must contain the same number of samples")
+    if batches_per_epoch is None:
+        if batch_size is None or batch_size <= 0:
+            raise ValueError("batch_size must be positive when batches_per_epoch is not set")
+    elif batch_size is not None:
+        raise ValueError("set either batch_size or batches_per_epoch, not both")
 
-    generator = torch.Generator()
-    generator.manual_seed(seed)
-    return DataLoader(
-        TensorDataset(inputs, targets),
-        batch_size=batch_size,
-        shuffle=True,
-        drop_last=False,
-        generator=generator,
-    )
+    dataset = TensorDataset(inputs, targets)
+    if batches_per_epoch is not None:
+        batch_sampler = ShuffledBalancedBatchSampler(
+            sample_count=len(dataset),
+            batch_count=batches_per_epoch,
+            seed=seed,
+        )
+        return DataLoader(dataset, batch_sampler=batch_sampler)
+
+    generator = torch.Generator().manual_seed(seed)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=False, generator=generator)
 
 
 def split_trajectory_indices(
@@ -103,7 +139,8 @@ def train_supervised(
     dataset: SimulationDataset,
     model: PendulumStateNetwork | None = None,
     max_epochs: int = 100,
-    batch_size: int = 256,
+    batch_size: int | None = 256,
+    batches_per_epoch: int | None = None,
     max_optimizer_steps: int = 5000,
     learning_rate: float = 1e-3,
     scheduler_factor: float = 0.5,
@@ -153,6 +190,7 @@ def train_supervised(
         train_inputs,
         train_targets,
         batch_size=batch_size,
+        batches_per_epoch=batches_per_epoch,
         seed=seed,
     )
 
@@ -232,8 +270,19 @@ def train_supervised(
 
     model.load_state_dict(best_model_state)
 
+    if batches_per_epoch is not None:
+        base_batch_size, extra_batch_count = divmod(train_inputs.shape[0], batches_per_epoch)
+        minimum_batch_size = base_batch_size
+        maximum_batch_size = base_batch_size + int(extra_batch_count > 0)
+    else:
+        minimum_batch_size = min(batch_size, train_inputs.shape[0])
+        maximum_batch_size = minimum_batch_size
+
     training_config = {
         "batch_size": batch_size,
+        "batches_per_epoch": batches_per_epoch,
+        "minimum_batch_size": minimum_batch_size,
+        "maximum_batch_size": maximum_batch_size,
         "max_epochs": max_epochs,
         "max_optimizer_steps": max_optimizer_steps,
         "learning_rate": learning_rate,

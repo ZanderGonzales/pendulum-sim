@@ -14,6 +14,9 @@ def make_training_result():
     return SimpleNamespace(
         training_config={
             "batch_size": 256,
+            "batches_per_epoch": None,
+            "minimum_batch_size": 256,
+            "maximum_batch_size": 256,
             "max_epochs": 100,
             "max_optimizer_steps": 5000,
             "learning_rate": 1e-3,

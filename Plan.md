@@ -311,7 +311,7 @@ The goal is to create a similar NN and model as the last model, but by calculati
 
 Use a fixed time step of 0.01 seconds. The model inputs are the current state \(x_k = [\theta_k, \dot{\theta}_k]\) and the known applied torque at the start, midpoint, and end of the time step. The model outputs \(\Delta x_k = [\Delta\theta_k, \Delta\dot{\theta}_k]\). During training, use simulator states as the current state and the simulator's next-step state change as the target. During evaluation, perform a rollout: use each predicted state as the current state for the next step, and compare the resulting full trajectory with the simulator.
 
-All architecture and procedures should mirror the baseline model, with the word residual replacing the word baseline in all files (eg. model_residual as the top level folder and residual_runs_0 holding all graphs and tables). All test procedures should be the same, and it should be trained on the exact same training, validation, and test trajectories as the baseline model, with similar graphs and per-trajectory error tables being made. Include a section of the README that details all of the same data as was created for the baseline model.
+All architecture and procedures should mirror the baseline model, with the word residual replacing the word baseline in all files (eg. model_residual as the top level folder and residual_runs_0 holding all graphs and tables). All test procedures should be the same, and it should be trained on the exact same training, validation, and test trajectories as the baseline model, with similar graphs and per-trajectory error tables being made. Include a similar "Experiment {n} Data.md" that details all of the same data as was created for the baseline model.
 
 ## Phase 9: Model Comparison
 

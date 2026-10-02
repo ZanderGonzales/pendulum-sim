@@ -137,6 +137,30 @@ def test_training_loader_shuffles_aligned_samples_and_keeps_final_batch() -> Non
     assert not torch.equal(shuffled_inputs[:, 0], inputs[:, 0])
 
 
+def test_training_loader_can_create_exact_number_of_balanced_batches() -> None:
+    inputs = torch.arange(32, dtype=torch.float32).reshape(-1, 1)
+    targets = torch.cat([inputs, inputs * 3.0], dim=1)
+    loader = make_training_loader(
+        inputs,
+        targets,
+        batch_size=None,
+        batches_per_epoch=10,
+        seed=11,
+    )
+    batches = list(loader)
+    batch_sizes = [batch_inputs.shape[0] for batch_inputs, _ in batches]
+    shuffled_inputs = torch.cat([batch_inputs for batch_inputs, _ in batches])
+    shuffled_targets = torch.cat([batch_targets for _, batch_targets in batches])
+
+    assert len(batches) == 10
+    assert sorted(batch_sizes) == [3] * 8 + [4] * 2
+    assert sorted(shuffled_inputs[:, 0].tolist()) == list(range(32))
+    assert torch.equal(shuffled_targets[:, 0], shuffled_inputs[:, 0])
+    assert torch.equal(shuffled_targets[:, 1], shuffled_inputs[:, 0] * 3.0)
+    next_epoch_inputs = torch.cat([batch_inputs for batch_inputs, _ in loader])
+    assert not torch.equal(shuffled_inputs, next_epoch_inputs)
+
+
 def test_training_records_updates_samples_learning_rate_and_losses() -> None:
     dataset = make_dataset()
     result = train_supervised(
@@ -159,6 +183,26 @@ def test_training_records_updates_samples_learning_rate_and_losses() -> None:
     assert result.training_config["scheduler_factor"] == 0.5
     assert result.training_config["scheduler_patience"] == 10
     assert result.training_config["min_learning_rate"] == 1e-6
+
+
+def test_training_with_batches_per_epoch_logs_balanced_batch_config() -> None:
+    dataset = make_dataset()
+    result = train_supervised(
+        dataset,
+        max_epochs=5,
+        max_optimizer_steps=3,
+        batch_size=None,
+        batches_per_epoch=2,
+        seed=4,
+    )
+    training_sample_count = len(result.split.train) * dataset.theta.shape[1]
+
+    assert result.training_config["batch_size"] is None
+    assert result.training_config["batches_per_epoch"] == 2
+    assert result.training_config["minimum_batch_size"] == training_sample_count // 2
+    assert result.training_config["maximum_batch_size"] == (training_sample_count + 1) // 2
+    assert result.history["optimizer_step"][-1] == 4.0
+    assert result.history["samples_seen"][-1] == float(training_sample_count * 2)
 
 
 def test_training_log_saves_required_budget_fields(tmp_path) -> None:

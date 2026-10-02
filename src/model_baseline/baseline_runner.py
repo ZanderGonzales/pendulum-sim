@@ -135,6 +135,9 @@ def save_experiment_data_note(case: dict, result, output_dir: Path) -> None:
         + ".",
         "- Model inputs: time, initial angle, initial angular velocity, and applied torque; targets: angle and angular velocity.",
         f"- Training configuration: batch_size={result.training_config['batch_size']}, "
+        f"batches_per_epoch={result.training_config['batches_per_epoch']}, "
+        f"batch_size_range={result.training_config['minimum_batch_size']}-"
+        f"{result.training_config['maximum_batch_size']}, "
         f"max_epochs={result.training_config['max_epochs']}, "
         f"max_optimizer_steps={result.training_config['max_optimizer_steps']}, "
         f"learning_rate={result.training_config['learning_rate']}, "
@@ -178,7 +181,8 @@ def run_baseline_case(
     *,
     max_epochs: int = 100,
     max_optimizer_steps: int = 5000,
-    batch_size: int = 256,
+    batch_size: int | None = 256,
+    batches_per_epoch: int | None = None,
     learning_rate: float = 1e-3,
     scheduler_factor: float = 0.5,
     scheduler_patience: int = 10,
@@ -208,6 +212,7 @@ def run_baseline_case(
         max_epochs=max_epochs,
         max_optimizer_steps=max_optimizer_steps,
         batch_size=batch_size,
+        batches_per_epoch=batches_per_epoch,
         learning_rate=learning_rate,
         scheduler_factor=scheduler_factor,
         scheduler_patience=scheduler_patience,
@@ -265,6 +270,7 @@ def run_baseline_case(
 
 def add_training_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--batch-size", type=int, default=256)
+    parser.add_argument("--batches-per-epoch", type=int)
     parser.add_argument("--max-epochs", type=int, default=100)
     parser.add_argument("--max-optimizer-steps", type=int, default=5000)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
@@ -283,7 +289,8 @@ def main() -> None:
         case,
         max_epochs=options.max_epochs,
         max_optimizer_steps=options.max_optimizer_steps,
-        batch_size=options.batch_size,
+        batch_size=options.batch_size if options.batches_per_epoch is None else None,
+        batches_per_epoch=options.batches_per_epoch,
         learning_rate=options.learning_rate,
         scheduler_factor=options.scheduler_factor,
         scheduler_patience=options.scheduler_patience,
