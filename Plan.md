@@ -313,8 +313,6 @@ Use a fixed time step of 0.01 seconds. The model inputs are the current state \(
 
 All architecture and procedures should mirror the baseline model, with the word residual replacing the word baseline in all files (eg. model_residual as the top level folder and residual_runs_0 holding all graphs and tables). All test procedures should be the same, and it should be trained on the exact same training, validation, and test trajectories as the baseline model, with similar graphs and per-trajectory error tables being made. Include a similar "Experiment {n} Data.md" that details all of the same data as was created for the baseline model.
 
-## Phase 9: Model Comparison
-
 Compare the baseline and residual models on the same test trajectories. Manually compare the example graphs, and compare the per-trajectory angle and angular-velocity MAE and RMSE, including their mean and standard deviation across trajectories. Use validation data to select each model's checkpoint; do not use test results to select models or training settings. Focus on how much data each model needs to predict the pendulum motion accurately and consistently.
 
 ---

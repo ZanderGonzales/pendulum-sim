@@ -95,11 +95,12 @@ def save_residual_experiment_data_note(case: dict, result, output_dir: Path) -> 
     test_configs = case["test_configs"]
     theta_values = sorted({config.theta0 for config in train_configs})
     omega_values = sorted({config.omega0 for config in train_configs})
-    torque_slopes = sorted({config.torque_parameters["slope"] for config in train_configs})
+    torque_names = sorted({config.torque_name for config in train_configs})
 
     def describe_conditions(configs: list) -> str:
         return "; ".join(
-            f"(theta0={config.theta0:.2f}, omega0={config.omega0:.2f}, slope={config.torque_parameters['slope']:.2f})"
+            f"(theta0={config.theta0:.2f}, omega0={config.omega0:.2f}, "
+            f"{', '.join(f'{key}={value:.4g}' for key, value in config.torque_parameters.items())})"
             for config in configs
         )
 
@@ -117,10 +118,10 @@ def save_residual_experiment_data_note(case: dict, result, output_dir: Path) -> 
         "- Training initial angles (rad): " + ", ".join(f"{value:.4f}" for value in theta_values) + ".",
         "- Training initial angular velocities (rad/s): " + ", ".join(f"{value:.4f}" for value in omega_values) + ".",
         "- Training initial conditions use every angle/velocity pair in the Cartesian product of those values.",
-        "- Torque family: linear ramp, tau(t) = slope * t.",
-        "- Training torque slopes (N m/s): " + ", ".join(f"{value:.2f}" for value in torque_slopes) + ".",
-        "- Validation cases (theta0 rad, omega0 rad/s, slope N m/s): " + describe_conditions(validation_configs) + ".",
-        "- Test cases (theta0 rad, omega0 rad/s, slope N m/s): " + describe_conditions(test_configs) + ".",
+        f"- Torque family: {', '.join(torque_names)}.",
+        "- Training cases (theta0 rad, omega0 rad/s, torque parameters): " + describe_conditions(train_configs) + ".",
+        "- Validation cases (theta0 rad, omega0 rad/s, torque parameters): " + describe_conditions(validation_configs) + ".",
+        "- Test cases (theta0 rad, omega0 rad/s, torque parameters): " + describe_conditions(test_configs) + ".",
         "- Model inputs: current theta, current omega, torque at the current step, midpoint torque, and next-step torque; targets: residual angle change and residual angular-velocity change.",
         f"- Training configuration: batch_size={result.training_config['batch_size']}, batches_per_epoch={result.training_config['batches_per_epoch']}, batch_size_range={result.training_config['minimum_batch_size']}-{result.training_config['maximum_batch_size']}, max_epochs={result.training_config['max_epochs']}, max_optimizer_steps={result.training_config['max_optimizer_steps']}, learning_rate={result.training_config['learning_rate']}, scheduler=ReduceLROnPlateau(factor={result.training_config['scheduler_factor']}, patience={result.training_config['scheduler_patience']}, min_lr={result.training_config['min_learning_rate']}).",
         f"- Actual training: {int(result.history['optimizer_step'][-1])} optimizer updates, {int(result.history['samples_seen'][-1])} training samples processed.",
