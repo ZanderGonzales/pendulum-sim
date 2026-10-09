@@ -1,0 +1,61 @@
+{
+  "per_trajectory": {
+    "12": {
+      "position_mae": 0.01679581508036994,
+      "position_rmse": 0.022267777679496826,
+      "final_position_error": 0.042409975257889226,
+      "maximum_position_error": 0.042409975257889226,
+      "heading_mae": 0.020733557828744822,
+      "heading_rmse": 0.022432545284805348,
+      "heading_unwrapped_mae": 0.020733557828744826,
+      "heading_unwrapped_rmse": 0.022432545284805355,
+      "path_length_error": -0.03721475106213712,
+      "true_path_length": 0.9022946464975128,
+      "predicted_path_length": 0.8650798954353757,
+      "body_dx_mae": 0.0010020734863128086,
+      "body_dy_mae": 6.925947977145897e-05,
+      "body_dtheta_mae": 0.0007687034380260346,
+      "inertial_dx_rmse": 0.0004743379466986429,
+      "inertial_dy_rmse": 0.0010824213484002118,
+      "inertial_dtheta_rmse": 0.0009553468870355823
+    },
+    "13": {
+      "position_mae": 0.008063254542248289,
+      "position_rmse": 0.012552881405404588,
+      "final_position_error": 0.03410993774115458,
+      "maximum_position_error": 0.03410993774115458,
+      "heading_mae": 0.022746488618065958,
+      "heading_rmse": 0.026991346490423253,
+      "heading_unwrapped_mae": 0.022746488618065948,
+      "heading_unwrapped_rmse": 0.026991346490423253,
+      "path_length_error": -0.004306540856318319,
+      "true_path_length": 1.2322975398550395,
+      "predicted_path_length": 1.2279909989987212,
+      "body_dx_mae": 0.0002866559164572309,
+      "body_dy_mae": 7.33688127058709e-05,
+      "body_dtheta_mae": 0.0011343661667011326,
+      "inertial_dx_rmse": 9.414584609592679e-05,
+      "inertial_dy_rmse": 0.00031224997674483953,
+      "inertial_dtheta_rmse": 0.0013387795242071959
+    }
+  },
+  "mean_across_test_trajectories": {
+    "position_mae": 0.012429534811309113,
+    "position_rmse": 0.017410329542450708,
+    "final_position_error": 0.03825995649952191,
+    "maximum_position_error": 0.03825995649952191,
+    "heading_mae": 0.02174002322340539,
+    "heading_rmse": 0.0247119458876143,
+    "heading_unwrapped_mae": 0.02174002322340539,
+    "heading_unwrapped_rmse": 0.024711945887614304,
+    "path_length_error": -0.02076064595922772,
+    "true_path_length": 1.0672960931762763,
+    "predicted_path_length": 1.0465354472170485,
+    "body_dx_mae": 0.0006443647013850198,
+    "body_dy_mae": 7.131414623866492e-05,
+    "body_dtheta_mae": 0.0009515348023635836,
+    "inertial_dx_rmse": 0.0002842418963972848,
+    "inertial_dy_rmse": 0.0006973356625725256,
+    "inertial_dtheta_rmse": 0.001147063205621389
+  }
+}

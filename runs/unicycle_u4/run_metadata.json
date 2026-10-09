@@ -1,0 +1,14 @@
+{
+  "command": "'C:\\Users\\micha\\OneDrive\\Documents\\Research\\Pendulum Sim\\.venv\\Scripts\\python.exe' scripts/model_unicycle_residual/evaluate_unicycle_rollout.py",
+  "code_version": "9a1cc33",
+  "checkpoint": "runs\\unicycle_u3\\checkpoint_best.pt",
+  "dataset": "runs\\unicycle_u2\\dataset.npz",
+  "device": "cpu",
+  "test_trajectory_ids": [
+    12,
+    13
+  ],
+  "dt": 0.05,
+  "dataset_seed": 2026,
+  "rollout_mode": "free_running; predicted inertial state recursively feeds the next step"
+}

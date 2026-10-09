@@ -154,7 +154,7 @@ def train_model(dataset: UnicycleDataset, config: TrainingConfig = TrainingConfi
 
 
 def save_training_outputs(result: TrainingResult, output_dir: str | Path) -> None:
-    """Save logs, standardizers, checkpoints, metrics, and a run README."""
+    """Save logs, standardizers, checkpoints, metrics, and a U-phase data note."""
     root = Path(output_dir)
     root.mkdir(parents=True, exist_ok=True)
     repo_root = Path(__file__).resolve().parents[2]
@@ -240,4 +240,4 @@ def save_training_outputs(result: TrainingResult, output_dir: str | Path) -> Non
         f"- Best validation epoch: {result.best_epoch}\n- Best standardized validation MSE: {result.best_validation_loss:.8g}\n"
         f"- Test physical-unit metrics: `{json.dumps(result.test_metrics, sort_keys=True)}`\n"
     )
-    (root / "README.md").write_text(readme, encoding="utf-8")
+    (root / "U3_Data.md").write_text(readme, encoding="utf-8")

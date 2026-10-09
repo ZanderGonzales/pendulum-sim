@@ -547,10 +547,10 @@ runs/unicycle_residual_runs_0/
 │   ├── path_comparison_000.png
 │   ├── path_comparison_summary.png
 │   └── ...
-└── README.md
+└── U[i]_Data.md
 ~~~
 
-The run README should summarize:
+For phase output folders such as `unicycle_u3/` and `unicycle_u4/`, name the run summary `U[i]_Data.md` (for example, `U3_Data.md`). For future experiment folders, name the summary `Experiment [i] Data.md` (for example, `Experiment 0 Data.md`). Each summary should include:
 
 - the command used;
 - the Git commit or code version;
