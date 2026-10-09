@@ -62,7 +62,7 @@ repository-root/
 └── ...existing project files...
 ~~~
 
-docs/Unicycle_Plan.md is the correct location for this document because it describes the whole experiment rather than one Python module. The simulator belongs in src/unicycle_sim/; the neural-network implementation belongs in src/model_unicycle_residual/; executable entry points belong in scripts/; generated outputs belong in runs/.
+The simulator belongs in src/unicycle_sim/; the neural-network implementation belongs in src/model_unicycle_residual/; executable entry points belong in scripts/; generated outputs belong in runs/.
 
 If the first unicycle implementation reveals genuinely identical code between pendulum and unicycle experiments, extract only that code into a small shared package, for example:
 
