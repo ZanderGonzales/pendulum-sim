@@ -24,8 +24,8 @@ def body_to_inertial(vector: np.ndarray, theta: float) -> np.ndarray:
     if vector.shape[-1:] != (2,):
         raise ValueError("vector's last dimension must be 2")
     c, s = np.cos(theta), np.sin(theta)
-    rotation = np.array([[c, -s], [s, c]])
-    return vector @ rotation.T
+    x, y = vector[..., 0], vector[..., 1]
+    return np.stack((c * x - s * y, s * x + c * y), axis=-1)
 
 
 def inertial_to_body(vector: np.ndarray, theta: float) -> np.ndarray:
@@ -34,5 +34,5 @@ def inertial_to_body(vector: np.ndarray, theta: float) -> np.ndarray:
     if vector.shape[-1:] != (2,):
         raise ValueError("vector's last dimension must be 2")
     c, s = np.cos(theta), np.sin(theta)
-    rotation = np.array([[c, -s], [s, c]])
-    return vector @ rotation
+    x, y = vector[..., 0], vector[..., 1]
+    return np.stack((c * x + s * y, -s * x + c * y), axis=-1)
