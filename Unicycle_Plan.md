@@ -515,10 +515,8 @@ Each plot should include:
 Save at least:
 
 ~~~text
-plots/path_comparison_<trajectory_id>.png
-plots/path_comparison_summary.png
-plots/position_error_vs_time_<trajectory_id>.png
-plots/heading_error_vs_time_<trajectory_id>.png
+plots/<trajectory_id>_path_comparison.png
+plots/summary_path_comparison.png
 plots/control_coverage.png
 plots/training_curves.png
 ~~~
@@ -544,13 +542,18 @@ runs/unicycle_residual_runs_0/
 │   ├── trajectory_000.npz
 │   └── ...
 ├── plots/
-│   ├── path_comparison_000.png
-│   ├── path_comparison_summary.png
+│   ├── 0_path_comparison.png
+│   ├── summary_path_comparison.png
 │   └── ...
 └── U[i]_Data.md
 ~~~
 
 For phase output folders such as `unicycle_u3/` and `unicycle_u4/`, name the run summary `U[i]_Data.md` (for example, `U3_Data.md`). For future experiment folders, name the summary `Experiment [i] Data.md` (for example, `Experiment 0 Data.md`). Each summary should include:
+
+- number of trajectories, split by train/validation/test;
+- epochs, batches per epoch, actual samples per batch, and total optimizer updates;
+- mean X, Y, and heading absolute errors (MAE) in the stated units;
+- a clear description of what differs from the baseline or previous experiment and which variables were changed.
 
 - the command used;
 - the Git commit or code version;

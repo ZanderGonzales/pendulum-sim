@@ -1,0 +1,6 @@
+{
+  "heading_cases": 5,
+  "maximum_state_error": 0.0,
+  "maximum_position_error": 0.0,
+  "passed_tolerance_1e_10": true
+}

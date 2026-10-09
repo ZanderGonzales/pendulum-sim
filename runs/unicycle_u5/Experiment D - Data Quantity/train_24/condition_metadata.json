@@ -1,0 +1,281 @@
+{
+  "experiment_id": 3,
+  "experiment": "D_Data_Quantity",
+  "condition": "train_24",
+  "optimizer_updates": 300,
+  "best_epoch": 50,
+  "training_config": {
+    "seed": 2026,
+    "epochs": 300,
+    "batch_size": 256,
+    "max_optimizer_updates": 300,
+    "learning_rate": 0.001,
+    "hidden_size": 64,
+    "hidden_layers": 2
+  },
+  "train_trajectory_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    9,
+    11,
+    12,
+    13,
+    14,
+    16,
+    17,
+    18,
+    19,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28
+  ],
+  "validation_trajectory_ids": [
+    5,
+    8,
+    10,
+    15,
+    37,
+    44,
+    54,
+    57
+  ],
+  "test_trajectory_ids": [
+    20,
+    29,
+    33,
+    36,
+    48,
+    49,
+    59,
+    61
+  ],
+  "dataset_metadata": {
+    "schema_version": 1,
+    "config": {
+      "num_trajectories": 64,
+      "num_steps": 60,
+      "dt": 0.05,
+      "speed_range": [
+        0.0,
+        2.0
+      ],
+      "omega_range": [
+        -1.5,
+        1.5
+      ],
+      "speed_distribution": "uniform",
+      "omega_distribution": "uniform",
+      "control_hold_steps": [
+        3,
+        10
+      ],
+      "initial_position_range": [
+        0.0,
+        0.0
+      ],
+      "initial_heading_range": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "split_fractions": [
+        0.75,
+        0.125,
+        0.125
+      ],
+      "include_boundary_controls": true,
+      "seed": 2028
+    },
+    "seed": 2028,
+    "dt": 0.05,
+    "duration": 3.0,
+    "num_trajectories": 64,
+    "num_steps_per_trajectory": 60,
+    "state_order": [
+      "x",
+      "y",
+      "theta"
+    ],
+    "control_order": [
+      "v",
+      "omega"
+    ],
+    "delta_body_target_order": [
+      "delta_x_body",
+      "delta_y_body",
+      "delta_theta"
+    ],
+    "delta_inertial_true_order": [
+      "delta_x",
+      "delta_y",
+      "delta_theta"
+    ],
+    "units": {
+      "position": "configured distance units",
+      "theta": "radians",
+      "v": "distance/second",
+      "omega": "radians/second"
+    },
+    "sampling": {
+      "mode": "piecewise_constant",
+      "speed": "uniform",
+      "omega": "uniform",
+      "control_hold_steps": [
+        3,
+        10
+      ],
+      "speed_range": [
+        0.0,
+        2.0
+      ],
+      "omega_range": [
+        -1.5,
+        1.5
+      ],
+      "initial_position_range_per_axis": [
+        0.0,
+        0.0
+      ],
+      "initial_heading_range": [
+        -3.141592653589793,
+        3.141592653589793
+      ],
+      "boundary_controls_injected": 6
+    },
+    "split_counts": {
+      "train": 24,
+      "validation": 8,
+      "test": 8,
+      "unused": 24
+    },
+    "trajectory_split": [
+      "train",
+      "train",
+      "train",
+      "train",
+      "train",
+      "validation",
+      "train",
+      "train",
+      "validation",
+      "train",
+      "validation",
+      "train",
+      "train",
+      "train",
+      "train",
+      "validation",
+      "train",
+      "train",
+      "train",
+      "train",
+      "test",
+      "train",
+      "train",
+      "train",
+      "train",
+      "train",
+      "train",
+      "train",
+      "train",
+      "test",
+      "unused",
+      "unused",
+      "unused",
+      "test",
+      "unused",
+      "unused",
+      "test",
+      "validation",
+      "unused",
+      "unused",
+      "unused",
+      "unused",
+      "unused",
+      "unused",
+      "validation",
+      "unused",
+      "unused",
+      "unused",
+      "test",
+      "test",
+      "unused",
+      "unused",
+      "unused",
+      "unused",
+      "validation",
+      "unused",
+      "unused",
+      "validation",
+      "unused",
+      "test",
+      "unused",
+      "test",
+      "unused",
+      "unused"
+    ],
+    "selected_training_trajectory_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      9,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      19,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28
+    ]
+  },
+  "one_step_physical_metrics": {
+    "dx_body_mae": 0.0010432188864797354,
+    "dx_body_rmse": 0.001495791831985116,
+    "dy_body_mae": 9.51419715420343e-05,
+    "dy_body_rmse": 0.00017872769967652857,
+    "dtheta_mae": 0.0017939171520993114,
+    "dtheta_rmse": 0.0024645125959068537,
+    "overall_rmse": 0.001667649019509554
+  },
+  "free_running_mean_metrics": {
+    "position_mae": 0.04114115730942094,
+    "position_rmse": 0.051767471219616,
+    "final_position_error": 0.10166739966102745,
+    "maximum_position_error": 0.10234952475717275,
+    "heading_mae": 0.031201218077052707,
+    "heading_rmse": 0.03769095840017932,
+    "heading_unwrapped_mae": 0.031201218077052707,
+    "heading_unwrapped_rmse": 0.03769095840017932,
+    "path_length_error": -0.01718395428209729,
+    "true_path_length": 3.2636487913616854,
+    "predicted_path_length": 3.2464648370795883,
+    "body_dx_mae": 0.0010432188131821282,
+    "body_dy_mae": 9.514196737704707e-05,
+    "body_dtheta_mae": 0.0017939171069563694,
+    "inertial_dx_rmse": 0.0009679043740680952,
+    "inertial_dy_rmse": 0.0009954826481226899,
+    "inertial_dtheta_rmse": 0.002311581537857806
+  }
+}

@@ -58,6 +58,9 @@ def _trajectory_metrics(true_states: np.ndarray, predicted_states: np.ndarray) -
     true_length = float(np.linalg.norm(np.diff(true_states[:, :2], axis=0), axis=1).sum())
     predicted_length = float(np.linalg.norm(np.diff(predicted_states[:, :2], axis=0), axis=1).sum())
     return {
+        "x_mae": float(np.mean(np.abs(predicted_states[:, 0] - true_states[:, 0]))),
+        "y_mae": float(np.mean(np.abs(predicted_states[:, 1] - true_states[:, 1]))),
+        "theta_mae": float(np.mean(np.abs(heading_wrapped))),
         "position_mae": float(position_error.mean()),
         "position_rmse": float(np.sqrt(np.mean(position_error ** 2))),
         "final_position_error": float(position_error[-1]),
@@ -99,6 +102,10 @@ def evaluate_test_set(model: UnicycleResidualMLP, checkpoint: dict, dataset: Uni
     predictions_dir, plots_dir = root / "predictions", root / "plots"
     predictions_dir.mkdir(parents=True, exist_ok=True)
     plots_dir.mkdir(parents=True, exist_ok=True)
+    # Remove legacy plot names when regenerating an existing run directory.
+    for pattern in ("heading_error_vs_time_*.png", "position_error_vs_time_*.png", "path_comparison_*.png"):
+        for stale_plot in plots_dir.glob(pattern):
+            stale_plot.unlink()
     import matplotlib
 
     matplotlib.use("Agg")
@@ -125,9 +132,6 @@ def evaluate_test_set(model: UnicycleResidualMLP, checkpoint: dict, dataset: Uni
             true_states=true, predicted_states=predicted, controls=controls,
             true_body_increments=true_body, predicted_body_increments=predicted_body,
         )
-        time = np.arange(len(true)) * dt
-        position_error = np.linalg.norm(predicted[:, :2] - true[:, :2], axis=1)
-        heading_error = np.asarray(angle_difference(predicted[:, 2], true[:, 2]))
         fig, ax = plt.subplots(figsize=(6.5, 5.5))
         ax.plot(true[:, 0], true[:, 1], label="True", linewidth=2)
         ax.plot(predicted[:, 0], predicted[:, 1], "--", label="Predicted", linewidth=1.8)
@@ -139,19 +143,8 @@ def evaluate_test_set(model: UnicycleResidualMLP, checkpoint: dict, dataset: Uni
         ax.grid(True, alpha=0.3)
         ax.legend()
         fig.tight_layout()
-        fig.savefig(plots_dir / f"path_comparison_{trajectory_id:03d}.png", dpi=150)
+        fig.savefig(plots_dir / f"{trajectory_id}_path_comparison.png", dpi=150)
         plt.close(fig)
-        for name, errors, ylabel in (
-            ("position", position_error, "Position error (distance units)"),
-            ("heading", heading_error, "Wrapped heading error (rad)"),
-        ):
-            fig, ax = plt.subplots(figsize=(7, 4))
-            ax.plot(time, errors)
-            ax.set(xlabel="Time (s)", ylabel=ylabel, title=f"Trajectory {trajectory_id}: {name} error")
-            ax.grid(True, alpha=0.3)
-            fig.tight_layout()
-            fig.savefig(plots_dir / f"{name}_error_vs_time_{trajectory_id:03d}.png", dpi=150)
-            plt.close(fig)
         overlay.append((int(trajectory_id), true, predicted))
 
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -166,7 +159,7 @@ def evaluate_test_set(model: UnicycleResidualMLP, checkpoint: dict, dataset: Uni
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize="small", ncol=2)
     fig.tight_layout()
-    fig.savefig(plots_dir / "path_comparison_summary.png", dpi=160)
+    fig.savefig(plots_dir / "summary_path_comparison.png", dpi=160)
     plt.close(fig)
 
     fields = list(summary_rows[0])

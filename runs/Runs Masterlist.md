@@ -84,5 +84,54 @@ Changed the torque patterns to be substantially more difficult, with sinusoidal 
 - 20000 optimizer updates
 - Mean Theta MAE: 0.038217, Mean Omega MAE 0.112272
 
+
+# Unicycle Residual
+Supervised learning model that is trained to learn the residual, or the difference between a given state and the next. The next state is then constructed and propagated for the next input.
+[forward v, omega] -> [delta_x_body, delta_y_body, delta_theta]
+
+## Phase U5 Experiment Matrix
+### Experiment A
+Didn't use an NN, just made sure that converting body to inertial frames and then plotting it worked correctly
+
+### Experiment B
+Used a narrower field of v and omega values, performed well
+- 64 trajectories
+- 25 epochs
+- 12 batches per epoch, ~256 samples per batch
+- 300 optimizer updates
+- Mean X MAE: 0.0063102, Mean Y MAE: 0.00660586, Mean Theta MAE: 0.00757348, 
+
+### Experiment C
+Trained with cardinal starting headings and then validated against random headings
+- 64 trajectories
+- 25 epochs
+- 12 batches per epoch, ~256 samples per batch
+- 300 optimizer updates
+- Mean X MAE: 0.0154338, Mean Y MAE: 0.0189883, Mean Theta MAE: 0.0175798,
+
+### Experiment D
+Ran similar data while having 8, 24, and 48 training trajectories. Performance was not affected greaetly
+-  trajectories
+-  epochs
+-  batches per epoch, 256 samples per batch
+-  optimizer updates
+- Mean X MAE: , Mean Y MAE: , Mean Theta MAE: ,
+
+### Experiment E
+Compared having 48 similar training trajectories vs 12 varied training trajectories. The 12 performed significantly better
+-  trajectories
+-  epochs
+-  batches per epoch, 256 samples per batch
+-  optimizer updates
+- Mean X MAE: , Mean Y MAE: , Mean Theta MAE: ,
+
+### Experiment F
+Changed optimizer updates from 100,300, and 900. Performance increased dramatically
+-  trajectories
+-  epochs
+-  batches per epoch, 256 samples per batch
+-  optimizer updates
+- Mean X MAE: , Mean Y MAE: , Mean Theta MAE: ,
+
 # Agent Instructions
 Never edit this file; this file is for manual run notes only

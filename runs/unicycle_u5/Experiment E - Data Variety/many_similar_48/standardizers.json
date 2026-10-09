@@ -1,0 +1,34 @@
+{
+  "feature_order": [
+    "v",
+    "omega",
+    "dt"
+  ],
+  "target_order": [
+    "delta_x_body",
+    "delta_y_body",
+    "delta_theta"
+  ],
+  "input_mean": [
+    0.894535481929779,
+    -0.001168561284430325,
+    0.050000011920928955
+  ],
+  "input_scale": [
+    0.0534079372882843,
+    0.09015582501888275,
+    1.0
+  ],
+  "target_mean": [
+    0.044726621359586716,
+    -1.5285002064047148e-06,
+    -5.842804239364341e-05
+  ],
+  "target_scale": [
+    0.00267038494348526,
+    0.00010109345021191984,
+    0.004507791250944138
+  ],
+  "scale_handling": "population standard deviation; scales <= 1e-8 replaced by 1",
+  "fit_split": "train only"
+}

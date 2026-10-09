@@ -1,0 +1,22 @@
+{
+  "phase": "U5",
+  "included_experiments": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ],
+  "excluded_experiment": "G",
+  "command": "'C:\\Users\\micha\\OneDrive\\Documents\\Research\\Pendulum Sim\\.venv\\Scripts\\python.exe' scripts/model_unicycle_residual/run_u5_experiments.py --updates 300 --seed 2026",
+  "code_version": "a00c765",
+  "seed": 2026,
+  "steps_per_trajectory": 60,
+  "common_update_budget_B_to_E": 300,
+  "update_budgets_F": [
+    100,
+    300,
+    900
+  ]
+}

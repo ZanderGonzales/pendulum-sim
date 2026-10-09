@@ -14,7 +14,7 @@ import time
 import numpy as np
 import torch
 from torch import nn
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, Sampler, TensorDataset
 
 from model_unicycle_residual.model import Standardizer, UnicycleResidualMLP
 from unicycle_sim.dataset import UnicycleDataset
@@ -25,15 +25,24 @@ from unicycle_sim.frames import inertial_to_body
 class TrainingConfig:
     seed: int = 0
     epochs: int = 300
-    batch_size: int = 256
+    batch_size: int | None = 256
+    batches_per_epoch: int | None = None
     max_optimizer_updates: int = 5000
     learning_rate: float = 1e-3
     hidden_size: int = 64
     hidden_layers: int = 2
 
     def __post_init__(self) -> None:
-        if min(self.epochs, self.batch_size, self.max_optimizer_updates, self.hidden_size, self.hidden_layers) <= 0:
+        if min(self.epochs, self.max_optimizer_updates, self.hidden_size, self.hidden_layers) <= 0:
             raise ValueError("epochs, batch size, update limit, and architecture sizes must be positive")
+        if self.batch_size is None and self.batches_per_epoch is None:
+            raise ValueError("configure batch_size or batches_per_epoch")
+        if self.batch_size is not None and self.batch_size <= 0:
+            raise ValueError("batch_size must be positive")
+        if self.batches_per_epoch is not None and self.batches_per_epoch <= 0:
+            raise ValueError("batches_per_epoch must be positive")
+        if self.batch_size is not None and self.batches_per_epoch is not None:
+            raise ValueError("set batch_size or batches_per_epoch, not both")
         if self.learning_rate <= 0:
             raise ValueError("learning_rate must be positive")
 
@@ -52,6 +61,29 @@ class TrainingResult:
     final_model_state: dict[str, torch.Tensor]
     test_metrics: dict[str, float]
     data_metadata: dict
+
+
+class BalancedBatchSampler(Sampler[list[int]]):
+    """Shuffle all samples into an exact count of near-equal batches per epoch."""
+
+    def __init__(self, sample_count: int, batch_count: int, seed: int) -> None:
+        if sample_count <= 0 or batch_count <= 0 or batch_count > sample_count:
+            raise ValueError("batch count must be positive and no greater than the training sample count")
+        self.sample_count, self.batch_count, self.seed, self.epoch = sample_count, batch_count, seed, 0
+
+    def __iter__(self):
+        generator = torch.Generator().manual_seed(self.seed + self.epoch)
+        self.epoch += 1
+        indices = torch.randperm(self.sample_count, generator=generator).tolist()
+        base, extra = divmod(self.sample_count, self.batch_count)
+        start = 0
+        for index in range(self.batch_count):
+            end = start + base + int(index < extra)
+            yield indices[start:end]
+            start = end
+
+    def __len__(self) -> int:
+        return self.batch_count
 
 
 def _split_arrays(dataset: UnicycleDataset, label: str) -> tuple[torch.Tensor, torch.Tensor]:
@@ -94,10 +126,16 @@ def train_model(dataset: UnicycleDataset, config: TrainingConfig = TrainingConfi
     val_xs, val_ys = input_scaler.transform(val_x), target_scaler.transform(val_y)
     test_xs = input_scaler.transform(test_x)
 
-    loader = DataLoader(
-        TensorDataset(train_xs, train_ys), batch_size=config.batch_size, shuffle=True,
-        drop_last=False, generator=torch.Generator().manual_seed(config.seed),
-    )
+    tensor_dataset = TensorDataset(train_xs, train_ys)
+    if config.batches_per_epoch is not None:
+        loader = DataLoader(tensor_dataset, batch_sampler=BalancedBatchSampler(
+            len(tensor_dataset), config.batches_per_epoch, config.seed,
+        ))
+    else:
+        loader = DataLoader(
+            tensor_dataset, batch_size=config.batch_size, shuffle=True,
+            drop_last=False, generator=torch.Generator().manual_seed(config.seed),
+        )
     model = UnicycleResidualMLP(hidden_size=config.hidden_size, hidden_layers=config.hidden_layers)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
     loss_fn = nn.MSELoss()
@@ -153,7 +191,9 @@ def train_model(dataset: UnicycleDataset, config: TrainingConfig = TrainingConfi
     )
 
 
-def save_training_outputs(result: TrainingResult, output_dir: str | Path) -> None:
+def save_training_outputs(
+    result: TrainingResult, output_dir: str | Path, summary_filename: str | None = "U3_Data.md"
+) -> None:
     """Save logs, standardizers, checkpoints, metrics, and a U-phase data note."""
     root = Path(output_dir)
     root.mkdir(parents=True, exist_ok=True)
@@ -240,4 +280,5 @@ def save_training_outputs(result: TrainingResult, output_dir: str | Path) -> Non
         f"- Best validation epoch: {result.best_epoch}\n- Best standardized validation MSE: {result.best_validation_loss:.8g}\n"
         f"- Test physical-unit metrics: `{json.dumps(result.test_metrics, sort_keys=True)}`\n"
     )
-    (root / "U3_Data.md").write_text(readme, encoding="utf-8")
+    if summary_filename is not None:
+        (root / summary_filename).write_text(readme, encoding="utf-8")
