@@ -126,12 +126,19 @@ Compared having 48 similar training trajectories vs 12 varied training trajector
 - Mean X MAE: , Mean Y MAE: , Mean Theta MAE: ,
 
 ### Experiment F
-Changed optimizer updates from 100,300, and 900. Performance increased dramatically
+Changed optimizer updates from 100, 300, and 900. Performance increased dramatically
 -  trajectories
 -  epochs
 -  batches per epoch, 256 samples per batch
 -  optimizer updates
 - Mean X MAE: , Mean Y MAE: , Mean Theta MAE: ,
+
+## Experiment 1
+- 64 trajectories
+- 15 epochs
+- 100 batches per epoch, 28-29 samples per batch
+- 1500 optimizer updates
+- Mean X MAE: 0.0066391725, Mean Y MAE: 0.0035642349, Mean Theta MAE: 0.0059398077 rad,
 
 # Agent Instructions
 Never edit this file; this file is for manual run notes only
