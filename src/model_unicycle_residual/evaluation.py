@@ -137,7 +137,7 @@ def evaluate_test_set(model: UnicycleResidualMLP, checkpoint: dict, dataset: Uni
         ax.plot(predicted[:, 0], predicted[:, 1], "--", label="Predicted", linewidth=1.8)
         ax.scatter(true[0, 0], true[0, 1], marker="o", color="black", zorder=3, label="Start")
         ax.set(xlabel="Inertial x (distance units)", ylabel="Inertial y (distance units)",
-               title=f"Trajectory {trajectory_id} · U4 recursive rollout")
+               title=f"Trajectory {trajectory_id} · recursive rollout")
         ax.axis("equal")
         ax.margins(0.08)
         ax.grid(True, alpha=0.3)
@@ -153,7 +153,7 @@ def evaluate_test_set(model: UnicycleResidualMLP, checkpoint: dict, dataset: Uni
         ax.plot(predicted[:, 0], predicted[:, 1], "--", label=f"Predicted {trajectory_id}")
         ax.scatter(true[0, 0], true[0, 1], marker="o", s=20)
     ax.set(xlabel="Inertial x (distance units)", ylabel="Inertial y (distance units)",
-           title="U4 test trajectories: true and recursive predictions")
+           title="Test trajectories: true and recursive predictions")
     ax.axis("equal")
     ax.margins(0.08)
     ax.grid(True, alpha=0.3)

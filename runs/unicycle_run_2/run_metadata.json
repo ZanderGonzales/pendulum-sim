@@ -1,0 +1,189 @@
+{
+  "experiment": "Experiment 2",
+  "description": "More aggressive training controls; one held-out test trajectory is a closed figure eight.",
+  "command": "'C:\\Users\\micha\\OneDrive\\Documents\\Research\\Pendulum Sim\\.venv\\Scripts\\python.exe' scripts/model_unicycle_residual/run_experiment_2.py",
+  "code_version": "67fb865",
+  "training_seed": 2026,
+  "dataset_seed": 2029,
+  "dataset_config": {
+    "num_trajectories": 64,
+    "num_steps": 60,
+    "dt": 0.05,
+    "speed_range": [
+      0.0,
+      3.0
+    ],
+    "omega_range": [
+      -7.0,
+      7.0
+    ],
+    "speed_distribution": "uniform",
+    "omega_distribution": "uniform",
+    "control_hold_steps": [
+      1,
+      3
+    ],
+    "initial_position_range": [
+      0.0,
+      0.0
+    ],
+    "initial_heading_range": [
+      -3.141592653589793,
+      3.141592653589793
+    ],
+    "split_fractions": [
+      0.75,
+      0.125,
+      0.125
+    ],
+    "include_boundary_controls": true,
+    "seed": 2029
+  },
+  "split_counts": {
+    "train": 48,
+    "validation": 8,
+    "test": 8
+  },
+  "split_trajectory_ids": {
+    "train": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      10,
+      11,
+      13,
+      14,
+      15,
+      16,
+      17,
+      19,
+      21,
+      22,
+      23,
+      24,
+      27,
+      28,
+      29,
+      30,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      42,
+      44,
+      46,
+      48,
+      49,
+      50,
+      51,
+      52,
+      54,
+      57,
+      59,
+      60,
+      61,
+      62
+    ],
+    "validation": [
+      8,
+      25,
+      26,
+      41,
+      43,
+      45,
+      53,
+      63
+    ],
+    "test": [
+      12,
+      18,
+      20,
+      31,
+      47,
+      55,
+      56,
+      58
+    ]
+  },
+  "training_config": {
+    "seed": 2026,
+    "epochs": 15,
+    "batch_size": null,
+    "batches_per_epoch": 100,
+    "max_optimizer_updates": 1500,
+    "learning_rate": 0.001,
+    "hidden_size": 64,
+    "hidden_layers": 2
+  },
+  "optimizer_updates": 1500,
+  "epochs_completed": 15,
+  "batches_per_epoch": {
+    "typical": 100,
+    "first_epoch": 100,
+    "last_epoch": 100
+  },
+  "samples_per_batch": {
+    "minimum": 28,
+    "maximum": 29,
+    "samples_per_epoch": 2880
+  },
+  "figure_eight_test": {
+    "trajectory_id": 12,
+    "steps_per_lobe": 30,
+    "shape_a": 0.8,
+    "shape_b": 0.4,
+    "maximum_speed": 2.3614286099446766,
+    "maximum_absolute_turn_rate": 6.640299395213643,
+    "dt": 0.05,
+    "closed_position_error": 0.0034484364291931537,
+    "heading_closure_error": 1.1102230246251565e-16,
+    "description": "60-step sampled Gerono lemniscate with a transverse crossing at the origin."
+  },
+  "best_epoch": 15,
+  "best_validation_mse_standardized": 0.00022216580691747367,
+  "one_step_test_metrics_body_frame": {
+    "dx_body_mae": 0.000201624512556009,
+    "dx_body_rmse": 0.0002849692536983639,
+    "dy_body_mae": 0.00011404999531805515,
+    "dy_body_rmse": 0.00017148182087112218,
+    "dtheta_mae": 0.0013533873716369271,
+    "dtheta_rmse": 0.0018447117181494832,
+    "overall_rmse": 0.0010822161566466093
+  },
+  "free_running_test_metrics": {
+    "x_mae": 0.011381085411857226,
+    "y_mae": 0.016579357283256206,
+    "theta_mae": 0.017290707347954612,
+    "position_mae": 0.022580775553713753,
+    "position_rmse": 0.027905437503050377,
+    "final_position_error": 0.04620413816812641,
+    "maximum_position_error": 0.04800269244304391,
+    "heading_mae": 0.017290707347954612,
+    "heading_rmse": 0.019783192816209598,
+    "heading_unwrapped_mae": 0.017290707347954612,
+    "heading_unwrapped_rmse": 0.019783192816209594,
+    "path_length_error": 0.006859916356676543,
+    "true_path_length": 4.400775634510874,
+    "predicted_path_length": 4.4076355508675515,
+    "body_dx_mae": 0.0002016243587399052,
+    "body_dy_mae": 0.00011404999729506228,
+    "body_dtheta_mae": 0.001353387242240579,
+    "inertial_dx_rmse": 0.00024104671465880292,
+    "inertial_dy_rmse": 0.0002017215851652596,
+    "inertial_dtheta_rmse": 0.0018211297117848534
+  },
+  "mean_x_mae": 0.011381085411857226,
+  "mean_y_mae": 0.016579357283256206,
+  "mean_theta_mae": 0.017290707347954612
+}
