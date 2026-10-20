@@ -73,6 +73,12 @@ Defaults:
 
 Before completing this phase, demonstrate hover and representative flight paths, explain coordinate conventions, and verify that controls produce the expected motion.
 
+#### Phase 1 Implementation Status
+
+Implemented locally for user review. The simulator, six-family flight controller, pinned model assets, demonstration script, and simulator tests are present. See [README.md](README.md#drone) for setup, physical conventions, controller equations, limitations, and reproduction commands. The initial demonstration is in `runs/Drone/drone_run_1/`. Phase 2 has not started, and no phase commit has been created.
+
+Interactive playback is available through `scripts/drone/playback_flight.py`, with pause/resume, restart, frame stepping, speed adjustment, looping, and a recorded-path line. See [playback usage](README.md#watch-a-saved-flight). Playback data, timing, and rendering are separated to accommodate a future transparent NN prediction of the same flight; the second-drone overlay is not implemented yet.
+
 ---
 
 ### Phase 2: Dataset Generation and Storage

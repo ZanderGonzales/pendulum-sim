@@ -11,6 +11,7 @@ dependencies = [
     "numpy>=2.0,<3.0",
     "matplotlib>=3.9,<4.0",
     "torch>=2.4,<3.0",
+    "mujoco==3.16.0",
 ]
 
 [tool.pytest.ini_options]
@@ -19,3 +20,6 @@ testpaths = ["tests"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+drone_sim = ["assets/bitcraze_crazyflie_2/*", "assets/bitcraze_crazyflie_2/assets/*.obj"]

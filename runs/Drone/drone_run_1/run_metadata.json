@@ -1,0 +1,1019 @@
+{
+  "phase": 1,
+  "experiment": 1,
+  "seed": 0,
+  "code_revision": "1df14b625acdcb8dccf1c8f800a9c130065039f0",
+  "working_tree_dirty": true,
+  "simulation": {
+    "mujoco_version": "3.16.0",
+    "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+    "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+    "model_license": "MIT",
+    "simulation_config": {
+      "dt": 0.01,
+      "internal_dt": 0.002,
+      "duration": 10.0
+    },
+    "mass_kg": 0.027,
+    "inertia_kg_m2": [
+      2.3951e-05,
+      2.3951e-05,
+      3.2347e-05
+    ],
+    "gravity_world_m_s2": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "density_kg_m3": 1.225,
+    "viscosity_pa_s": 1.8e-05,
+    "wind_world_m_s": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "integrator": "RK4",
+    "actuator_gears": [
+      1.0,
+      -1e-05,
+      -1e-05,
+      -1e-05
+    ],
+    "actuator_ctrlrange": [
+      [
+        0.0,
+        0.35
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ]
+    ],
+    "state_order": [
+      "x",
+      "y",
+      "z",
+      "qw",
+      "qx",
+      "qy",
+      "qz",
+      "vx",
+      "vy",
+      "vz",
+      "wx",
+      "wy",
+      "wz"
+    ],
+    "control_order": [
+      "thrust_N",
+      "moment_x_Nm",
+      "moment_y_Nm",
+      "moment_z_Nm"
+    ],
+    "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body"
+  },
+  "flights": {
+    "hover": {
+      "mujoco_version": "3.16.0",
+      "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+      "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+      "model_license": "MIT",
+      "simulation_config": {
+        "dt": 0.01,
+        "internal_dt": 0.002,
+        "duration": 10.0
+      },
+      "mass_kg": 0.027,
+      "inertia_kg_m2": [
+        2.3951e-05,
+        2.3951e-05,
+        3.2347e-05
+      ],
+      "gravity_world_m_s2": [
+        0.0,
+        0.0,
+        -9.81
+      ],
+      "density_kg_m3": 1.225,
+      "viscosity_pa_s": 1.8e-05,
+      "wind_world_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "integrator": "RK4",
+      "actuator_gears": [
+        1.0,
+        -1e-05,
+        -1e-05,
+        -1e-05
+      ],
+      "actuator_ctrlrange": [
+        [
+          0.0,
+          0.35
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "state_order": [
+        "x",
+        "y",
+        "z",
+        "qw",
+        "qx",
+        "qy",
+        "qz",
+        "vx",
+        "vy",
+        "vz",
+        "wx",
+        "wy",
+        "wz"
+      ],
+      "control_order": [
+        "thrust_N",
+        "moment_x_Nm",
+        "moment_y_Nm",
+        "moment_z_Nm"
+      ],
+      "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body",
+      "family": "hover",
+      "seed": 0,
+      "controller_config": {
+        "position_gain": 1.2,
+        "velocity_gain": 2.0,
+        "attitude_gain": 64.0,
+        "angular_velocity_gain": 16.0,
+        "max_tilt_radians": 0.20943951023931956
+      },
+      "reference_definition": "drone_sim.controls.FlightReference",
+      "reference_knots": [
+        0.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0
+      ],
+      "reference_points": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -0.17405005120972952,
+          0.11277728611209809,
+          1.1281888943194305
+        ],
+        [
+          0.038388879276184756,
+          0.0826187619542394,
+          1.0359062478663557
+        ],
+        [
+          0.15662607256359656,
+          0.11370727948375159,
+          0.900684625042537
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_state": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "requested_steps": 1000,
+      "completed_steps": 1000,
+      "flight_envelope": {
+        "height_m": [
+          0.05,
+          5.0
+        ],
+        "horizontal_radius_m": 10.0,
+        "max_speed_m_s": 10.0,
+        "max_tilt_degrees": 60.0
+      }
+    },
+    "straight": {
+      "mujoco_version": "3.16.0",
+      "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+      "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+      "model_license": "MIT",
+      "simulation_config": {
+        "dt": 0.01,
+        "internal_dt": 0.002,
+        "duration": 10.0
+      },
+      "mass_kg": 0.027,
+      "inertia_kg_m2": [
+        2.3951e-05,
+        2.3951e-05,
+        3.2347e-05
+      ],
+      "gravity_world_m_s2": [
+        0.0,
+        0.0,
+        -9.81
+      ],
+      "density_kg_m3": 1.225,
+      "viscosity_pa_s": 1.8e-05,
+      "wind_world_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "integrator": "RK4",
+      "actuator_gears": [
+        1.0,
+        -1e-05,
+        -1e-05,
+        -1e-05
+      ],
+      "actuator_ctrlrange": [
+        [
+          0.0,
+          0.35
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "state_order": [
+        "x",
+        "y",
+        "z",
+        "qw",
+        "qx",
+        "qy",
+        "qz",
+        "vx",
+        "vy",
+        "vz",
+        "wx",
+        "wy",
+        "wz"
+      ],
+      "control_order": [
+        "thrust_N",
+        "moment_x_Nm",
+        "moment_y_Nm",
+        "moment_z_Nm"
+      ],
+      "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body",
+      "family": "straight",
+      "seed": 0,
+      "controller_config": {
+        "position_gain": 1.2,
+        "velocity_gain": 2.0,
+        "attitude_gain": 64.0,
+        "angular_velocity_gain": 16.0,
+        "max_tilt_radians": 0.20943951023931956
+      },
+      "reference_definition": "drone_sim.controls.FlightReference",
+      "reference_knots": [
+        0.0,
+        3.5,
+        5.5,
+        9.0,
+        10.0
+      ],
+      "reference_points": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.3,
+          0.0,
+          1.0
+        ],
+        [
+          0.3,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_state": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "requested_steps": 1000,
+      "completed_steps": 1000,
+      "flight_envelope": {
+        "height_m": [
+          0.05,
+          5.0
+        ],
+        "horizontal_radius_m": 10.0,
+        "max_speed_m_s": 10.0,
+        "max_tilt_degrees": 60.0
+      }
+    },
+    "climb_descent": {
+      "mujoco_version": "3.16.0",
+      "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+      "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+      "model_license": "MIT",
+      "simulation_config": {
+        "dt": 0.01,
+        "internal_dt": 0.002,
+        "duration": 10.0
+      },
+      "mass_kg": 0.027,
+      "inertia_kg_m2": [
+        2.3951e-05,
+        2.3951e-05,
+        3.2347e-05
+      ],
+      "gravity_world_m_s2": [
+        0.0,
+        0.0,
+        -9.81
+      ],
+      "density_kg_m3": 1.225,
+      "viscosity_pa_s": 1.8e-05,
+      "wind_world_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "integrator": "RK4",
+      "actuator_gears": [
+        1.0,
+        -1e-05,
+        -1e-05,
+        -1e-05
+      ],
+      "actuator_ctrlrange": [
+        [
+          0.0,
+          0.35
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "state_order": [
+        "x",
+        "y",
+        "z",
+        "qw",
+        "qx",
+        "qy",
+        "qz",
+        "vx",
+        "vy",
+        "vz",
+        "wx",
+        "wy",
+        "wz"
+      ],
+      "control_order": [
+        "thrust_N",
+        "moment_x_Nm",
+        "moment_y_Nm",
+        "moment_z_Nm"
+      ],
+      "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body",
+      "family": "climb_descent",
+      "seed": 0,
+      "controller_config": {
+        "position_gain": 1.2,
+        "velocity_gain": 2.0,
+        "attitude_gain": 64.0,
+        "angular_velocity_gain": 16.0,
+        "max_tilt_radians": 0.20943951023931956
+      },
+      "reference_definition": "drone_sim.controls.FlightReference",
+      "reference_knots": [
+        0.0,
+        3.5,
+        5.5,
+        9.0,
+        10.0
+      ],
+      "reference_points": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.25
+        ],
+        [
+          0.0,
+          0.0,
+          1.25
+        ],
+        [
+          0.0,
+          0.0,
+          0.9
+        ],
+        [
+          0.0,
+          0.0,
+          0.9
+        ]
+      ],
+      "initial_state": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "requested_steps": 1000,
+      "completed_steps": 1000,
+      "flight_envelope": {
+        "height_m": [
+          0.05,
+          5.0
+        ],
+        "horizontal_radius_m": 10.0,
+        "max_speed_m_s": 10.0,
+        "max_tilt_degrees": 60.0
+      }
+    },
+    "circle": {
+      "mujoco_version": "3.16.0",
+      "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+      "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+      "model_license": "MIT",
+      "simulation_config": {
+        "dt": 0.01,
+        "internal_dt": 0.002,
+        "duration": 10.0
+      },
+      "mass_kg": 0.027,
+      "inertia_kg_m2": [
+        2.3951e-05,
+        2.3951e-05,
+        3.2347e-05
+      ],
+      "gravity_world_m_s2": [
+        0.0,
+        0.0,
+        -9.81
+      ],
+      "density_kg_m3": 1.225,
+      "viscosity_pa_s": 1.8e-05,
+      "wind_world_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "integrator": "RK4",
+      "actuator_gears": [
+        1.0,
+        -1e-05,
+        -1e-05,
+        -1e-05
+      ],
+      "actuator_ctrlrange": [
+        [
+          0.0,
+          0.35
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "state_order": [
+        "x",
+        "y",
+        "z",
+        "qw",
+        "qx",
+        "qy",
+        "qz",
+        "vx",
+        "vy",
+        "vz",
+        "wx",
+        "wy",
+        "wz"
+      ],
+      "control_order": [
+        "thrust_N",
+        "moment_x_Nm",
+        "moment_y_Nm",
+        "moment_z_Nm"
+      ],
+      "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body",
+      "family": "circle",
+      "seed": 0,
+      "controller_config": {
+        "position_gain": 1.2,
+        "velocity_gain": 2.0,
+        "attitude_gain": 64.0,
+        "angular_velocity_gain": 16.0,
+        "max_tilt_radians": 0.20943951023931956
+      },
+      "reference_definition": "drone_sim.controls.FlightReference",
+      "reference_knots": [
+        0.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0
+      ],
+      "reference_points": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -0.17405005120972952,
+          0.11277728611209809,
+          1.1281888943194305
+        ],
+        [
+          0.038388879276184756,
+          0.0826187619542394,
+          1.0359062478663557
+        ],
+        [
+          0.15662607256359656,
+          0.11370727948375159,
+          0.900684625042537
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_state": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "requested_steps": 1000,
+      "completed_steps": 1000,
+      "flight_envelope": {
+        "height_m": [
+          0.05,
+          5.0
+        ],
+        "horizontal_radius_m": 10.0,
+        "max_speed_m_s": 10.0,
+        "max_tilt_degrees": 60.0
+      }
+    },
+    "figure_eight": {
+      "mujoco_version": "3.16.0",
+      "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+      "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+      "model_license": "MIT",
+      "simulation_config": {
+        "dt": 0.01,
+        "internal_dt": 0.002,
+        "duration": 10.0
+      },
+      "mass_kg": 0.027,
+      "inertia_kg_m2": [
+        2.3951e-05,
+        2.3951e-05,
+        3.2347e-05
+      ],
+      "gravity_world_m_s2": [
+        0.0,
+        0.0,
+        -9.81
+      ],
+      "density_kg_m3": 1.225,
+      "viscosity_pa_s": 1.8e-05,
+      "wind_world_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "integrator": "RK4",
+      "actuator_gears": [
+        1.0,
+        -1e-05,
+        -1e-05,
+        -1e-05
+      ],
+      "actuator_ctrlrange": [
+        [
+          0.0,
+          0.35
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "state_order": [
+        "x",
+        "y",
+        "z",
+        "qw",
+        "qx",
+        "qy",
+        "qz",
+        "vx",
+        "vy",
+        "vz",
+        "wx",
+        "wy",
+        "wz"
+      ],
+      "control_order": [
+        "thrust_N",
+        "moment_x_Nm",
+        "moment_y_Nm",
+        "moment_z_Nm"
+      ],
+      "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body",
+      "family": "figure_eight",
+      "seed": 0,
+      "controller_config": {
+        "position_gain": 1.2,
+        "velocity_gain": 2.0,
+        "attitude_gain": 64.0,
+        "angular_velocity_gain": 16.0,
+        "max_tilt_radians": 0.20943951023931956
+      },
+      "reference_definition": "drone_sim.controls.FlightReference",
+      "reference_knots": [
+        0.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0
+      ],
+      "reference_points": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -0.17405005120972952,
+          0.11277728611209809,
+          1.1281888943194305
+        ],
+        [
+          0.038388879276184756,
+          0.0826187619542394,
+          1.0359062478663557
+        ],
+        [
+          0.15662607256359656,
+          0.11370727948375159,
+          0.900684625042537
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_state": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "requested_steps": 1000,
+      "completed_steps": 1000,
+      "flight_envelope": {
+        "height_m": [
+          0.05,
+          5.0
+        ],
+        "horizontal_radius_m": 10.0,
+        "max_speed_m_s": 10.0,
+        "max_tilt_degrees": 60.0
+      }
+    },
+    "waypoints": {
+      "mujoco_version": "3.16.0",
+      "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+      "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+      "model_license": "MIT",
+      "simulation_config": {
+        "dt": 0.01,
+        "internal_dt": 0.002,
+        "duration": 10.0
+      },
+      "mass_kg": 0.027,
+      "inertia_kg_m2": [
+        2.3951e-05,
+        2.3951e-05,
+        3.2347e-05
+      ],
+      "gravity_world_m_s2": [
+        0.0,
+        0.0,
+        -9.81
+      ],
+      "density_kg_m3": 1.225,
+      "viscosity_pa_s": 1.8e-05,
+      "wind_world_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "integrator": "RK4",
+      "actuator_gears": [
+        1.0,
+        -1e-05,
+        -1e-05,
+        -1e-05
+      ],
+      "actuator_ctrlrange": [
+        [
+          0.0,
+          0.35
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ],
+        [
+          -1.0,
+          1.0
+        ]
+      ],
+      "state_order": [
+        "x",
+        "y",
+        "z",
+        "qw",
+        "qx",
+        "qy",
+        "qz",
+        "vx",
+        "vy",
+        "vz",
+        "wx",
+        "wy",
+        "wz"
+      ],
+      "control_order": [
+        "thrust_N",
+        "moment_x_Nm",
+        "moment_y_Nm",
+        "moment_z_Nm"
+      ],
+      "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body",
+      "family": "waypoints",
+      "seed": 0,
+      "controller_config": {
+        "position_gain": 1.2,
+        "velocity_gain": 2.0,
+        "attitude_gain": 64.0,
+        "angular_velocity_gain": 16.0,
+        "max_tilt_radians": 0.20943951023931956
+      },
+      "reference_definition": "drone_sim.controls.FlightReference",
+      "reference_knots": [
+        0.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0
+      ],
+      "reference_points": [
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          -0.17405005120972952,
+          0.11277728611209809,
+          1.1281888943194305
+        ],
+        [
+          0.038388879276184756,
+          0.0826187619542394,
+          1.0359062478663557
+        ],
+        [
+          0.15662607256359656,
+          0.11370727948375159,
+          0.900684625042537
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_state": [
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "requested_steps": 1000,
+      "completed_steps": 1000,
+      "flight_envelope": {
+        "height_m": [
+          0.05,
+          5.0
+        ],
+        "horizontal_radius_m": 10.0,
+        "max_speed_m_s": 10.0,
+        "max_tilt_degrees": 60.0
+      }
+    }
+  },
+  "summary": [
+    {
+      "family": "hover",
+      "valid_for_learning": true,
+      "completed_steps": 1000,
+      "contact_steps": 0,
+      "position_tracking_mae_m": 0.0,
+      "maximum_tracking_error_m": 0.0,
+      "failure_reason": null
+    },
+    {
+      "family": "straight",
+      "valid_for_learning": true,
+      "completed_steps": 1000,
+      "contact_steps": 0,
+      "position_tracking_mae_m": 0.009537434047361418,
+      "maximum_tracking_error_m": 0.02101051497266399,
+      "failure_reason": null
+    },
+    {
+      "family": "climb_descent",
+      "valid_for_learning": true,
+      "completed_steps": 1000,
+      "contact_steps": 0,
+      "position_tracking_mae_m": 0.0008619186184118744,
+      "maximum_tracking_error_m": 0.0020850820972684314,
+      "failure_reason": null
+    },
+    {
+      "family": "circle",
+      "valid_for_learning": true,
+      "completed_steps": 1000,
+      "contact_steps": 0,
+      "position_tracking_mae_m": 0.01692440319248198,
+      "maximum_tracking_error_m": 0.03153814548668674,
+      "failure_reason": null
+    },
+    {
+      "family": "figure_eight",
+      "valid_for_learning": true,
+      "completed_steps": 1000,
+      "contact_steps": 0,
+      "position_tracking_mae_m": 0.029112848913767506,
+      "maximum_tracking_error_m": 0.08171937887997802,
+      "failure_reason": null
+    },
+    {
+      "family": "waypoints",
+      "valid_for_learning": true,
+      "completed_steps": 1000,
+      "contact_steps": 0,
+      "position_tracking_mae_m": 0.014040955974031478,
+      "maximum_tracking_error_m": 0.03130486376970827,
+      "failure_reason": null
+    }
+  ],
+  "training": "Not run: simulation demonstration only",
+  "rendered_scene": "plots/crazyflie_scene.png"
+}
