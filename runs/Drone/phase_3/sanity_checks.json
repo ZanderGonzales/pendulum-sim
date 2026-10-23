@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "checks": {
+    "free_fall_position_max_abs_error_m": 8.881784197001252e-16,
+    "free_fall_velocity_max_abs_error_m_s": 2.7755575615628914e-17,
+    "hover_state_max_abs_error": 0.0,
+    "tilted_thrust_acceleration_max_abs_error_m_s2": 1.7763568394002505e-15,
+    "resting_angular_acceleration_max_abs_error_rad_s2": 0.0,
+    "single_axis_rotation_max_abs_error": 1.1102230246251565e-16
+  }
+}

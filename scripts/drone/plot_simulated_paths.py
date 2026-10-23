@@ -12,17 +12,8 @@ import subprocess
 import numpy as np
 
 from drone_sim import DroneSimulator, FLIGHT_FAMILIES, FlightReference, SimulationConfig, simulate_flight
+from drone_sim.artifacts import next_phase
 from drone_sim.plotting import plot_flight, plot_path_summary
-
-
-def next_run(root: Path) -> tuple[Path, int]:
-    root.mkdir(parents=True, exist_ok=True)
-    number = 1
-    while (root / f"drone_run_{number}").exists():
-        number += 1
-    target = root / f"drone_run_{number}"
-    target.mkdir()
-    return target, number
 
 
 def main() -> None:
@@ -36,7 +27,7 @@ def main() -> None:
     args = parser.parse_args()
     config = SimulationConfig(args.dt, args.internal_dt, args.duration)
     simulator = DroneSimulator(config)
-    output, number = next_run(args.output_root)
+    output, number = next_phase(args.output_root, 1)
     plots = output / "plots"
     plots.mkdir()
     flights, summary, failures = {}, [], []
@@ -69,7 +60,7 @@ def main() -> None:
     (output / "failed_trajectories.json").write_text(json.dumps(failures, indent=2) + "\n", encoding="utf-8")
     revision = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=False)
     dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=normal"], capture_output=True, text=True, check=False)
-    metadata = {"phase": 1, "experiment": number, "seed": args.seed,
+    metadata = {"phase": number, "seed": args.seed,
                 "code_revision": revision.stdout.strip() or "unavailable", "working_tree_dirty": bool(dirty.stdout.strip()),
                 "simulation": simulator.metadata(), "flights": {name: f.metadata for name, f in flights.items()},
                 "summary": summary, "training": "Not run: simulation demonstration only"}
@@ -81,7 +72,7 @@ def main() -> None:
             plt.imsave(plots / "crazyflie_scene.png", renderer.render())
         metadata["rendered_scene"] = "plots/crazyflie_scene.png"
     (output / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
-    lines = [f"# Experiment {number} Data: Drone Phase 1", "",
+    lines = [f"# Phase {number} Data: Drone Simulation", "",
              "Six controlled MuJoCo flights; no training, learned model, or train/validation/test split.", "",
              f"- Seed: {args.seed}", f"- Prediction interval: {args.dt} s; internal interval: {args.internal_dt} s",
              f"- Requested duration: {args.duration} s per family; {config.num_steps} transitions each",
@@ -99,7 +90,7 @@ def main() -> None:
              "## Changes and next phase", "",
              "Phase 1 adds the pinned reference simulator and controller. No earlier drone learning experiment exists. "
              "Phase 2 will add larger seeded datasets, coverage plots, storage/loading, and trajectory splits.", ""]
-    (output / f"Experiment {number} Data.md").write_text("\n".join(lines), encoding="utf-8")
+    (output / f"Phase {number} Data.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"Saved demonstration: {output}")
     if failures:
         raise SystemExit("Some flights failed; inspect failed_trajectories.json")

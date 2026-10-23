@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "protected_files_unchanged": true,
+  "source_and_input_hashes_match": true,
+  "event_rows": 55080,
+  "segment_rows": 55120,
+  "plots": 56,
+  "phase5_no_refresh_exact": true,
+  "every_step_max_difference_from_phase5_one_step": 2.772004847884091e-12,
+  "every_step_matches_independent_one_step_with_same_batch_size_exactly": true,
+  "all_archive_metrics_recomputed": true,
+  "all_comparison_csv_metrics_match_json": true,
+  "all_refresh_snapshots_and_full_state_replacements_exact": true,
+  "all_archives_load_with_existing_comparison_playback": true
+}

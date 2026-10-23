@@ -1,0 +1,1 @@
+schedule,split,trajectory_id,predictor,step,time_s,pre_position_error_m,pre_orientation_error_rad,pre_orientation_error_deg,pre_linear_velocity_error_m_s,pre_angular_velocity_error_rad_s,post_position_error_m,post_orientation_error_rad

@@ -1,0 +1,22 @@
+{
+  "optimizer_updates": 10000,
+  "epochs_started": 32,
+  "completed_epochs": 31,
+  "epoch_fraction": 31.9504,
+  "samples_processed": 2556032,
+  "train_samples": 80000,
+  "validation_samples": 10000,
+  "batches_per_complete_epoch": 313,
+  "best_update": 9900,
+  "best_validation_residual_mse": 0.000604778281911583,
+  "initial_validation_residual_mse": 1.0576612869613236,
+  "final_train_residual_mse": 0.00019303974949477692,
+  "final_validation_residual_mse": 0.0006263833273311608,
+  "training_seconds": 28.011304200001177,
+  "preparation_seconds": 7.410738600010518,
+  "trainable_parameters": 5900,
+  "device": "cpu",
+  "num_threads": 1,
+  "selection": "lowest full validation standardized residual MSE, including initialization",
+  "test_data_used_for_training_or_selection": false
+}

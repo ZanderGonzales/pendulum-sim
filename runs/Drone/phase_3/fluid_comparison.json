@@ -1,0 +1,114 @@
+{
+  "samples": 800,
+  "source_split": "train",
+  "samples_per_trajectory": 10,
+  "fluid_off_simulation": {
+    "mujoco_version": "3.16.0",
+    "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+    "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+    "model_license": "MIT",
+    "simulation_config": {
+      "dt": 0.01,
+      "internal_dt": 0.002,
+      "duration": 10.0
+    },
+    "mass_kg": 0.027,
+    "inertia_kg_m2": [
+      2.3951e-05,
+      2.3951e-05,
+      3.2347e-05
+    ],
+    "gravity_world_m_s2": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "inertial_position_body_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "inertial_quaternion_wxyz": [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "density_kg_m3": 0.0,
+    "viscosity_pa_s": 0.0,
+    "wind_world_m_s": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "integrator": "RK4",
+    "actuator_gears": [
+      1.0,
+      -1e-05,
+      -1e-05,
+      -1e-05
+    ],
+    "actuator_ctrlrange": [
+      [
+        0.0,
+        0.35
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ]
+    ],
+    "state_order": [
+      "x",
+      "y",
+      "z",
+      "qw",
+      "qx",
+      "qy",
+      "qz",
+      "vx",
+      "vy",
+      "vz",
+      "wx",
+      "wy",
+      "wz"
+    ],
+    "control_order": [
+      "thrust_N",
+      "moment_x_Nm",
+      "moment_y_Nm",
+      "moment_z_Nm"
+    ],
+    "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body"
+  },
+  "comparisons": {
+    "fluid_off": {
+      "mean_position_m": 6.011143979700656e-16,
+      "max_position_m": 1.2058703621579843e-14,
+      "mean_orientation_rad": 5.180128778173563e-12,
+      "max_orientation_rad": 8.932436511171029e-11,
+      "mean_linear_velocity_m_s": 1.8620050289494394e-13,
+      "max_linear_velocity_m_s": 3.75370341447359e-12,
+      "mean_angular_velocity_rad_s": 8.640655264208461e-19,
+      "max_angular_velocity_rad_s": 5.553824967135427e-17
+    },
+    "normal_reference": {
+      "mean_position_m": 3.7828504737028886e-08,
+      "max_position_m": 5.895134768740124e-07,
+      "mean_orientation_rad": 1.1483501697498223e-09,
+      "max_orientation_rad": 1.4584649349856725e-08,
+      "mean_linear_velocity_m_s": 7.565194947993414e-06,
+      "max_linear_velocity_m_s": 0.0001174957615833613,
+      "mean_angular_velocity_rad_s": 2.294960025950806e-07,
+      "max_angular_velocity_rad_s": 2.9093595797044676e-06
+    }
+  }
+}

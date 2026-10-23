@@ -7,7 +7,7 @@ its recorded applied controls instead of querying this controller with truth.
 from dataclasses import dataclass
 import numpy as np
 
-from drone_sim.frames import rotation_matrix
+from drone_sim.frames import rotation_matrix, yaw_quaternion
 from drone_sim.types import DroneControl
 
 
@@ -31,13 +31,21 @@ def smooth_step(t: float, duration: float) -> tuple[float, float, float]:
 
 
 class FlightReference:
-    def __init__(self, family: str, duration: float = 10., seed: int = 0):
+    def __init__(self, family: str, duration: float = 10., seed: int = 0, *,
+                 origin=(0., 0., 1.), yaw_offset: float = 0., motion_scale: float = 1.,
+                 cycles: float = 1.):
         if family not in FLIGHT_FAMILIES:
             raise ValueError(f"family must be one of {FLIGHT_FAMILIES}")
         if not np.isfinite(duration) or duration <= 0:
             raise ValueError("duration must be positive and finite")
         self.family, self.duration, self.seed = family, duration, seed
-        self.origin = np.array([0., 0., 1.])
+        self.origin = np.asarray(origin, dtype=float).copy()
+        if self.origin.shape != (3,) or not np.isfinite(self.origin).all():
+            raise ValueError("origin must contain three finite values")
+        if not np.isfinite([yaw_offset, motion_scale, cycles]).all() or min(motion_scale, cycles) <= 0:
+            raise ValueError("yaw must be finite; motion scale and cycles must be positive and finite")
+        self.yaw_offset, self.motion_scale, self.cycles = float(yaw_offset), float(motion_scale), float(cycles)
+        self.path_rotation = rotation_matrix(yaw_quaternion(yaw_offset))
         self.knots = np.array([0., .35, .55, .9, 1.]) * duration
         if family == "straight":
             self.points = self.origin + np.array([[0, 0, 0], [.3, 0, 0], [.3, 0, 0], [0, 0, 0], [0, 0, 0]])
@@ -49,20 +57,28 @@ class FlightReference:
             offsets[0] = offsets[-1] = 0.
             self.points = self.origin + offsets
             self.knots = np.linspace(0, duration, 5)
+        self.points = self.origin + self.motion_scale * ((self.points-self.origin) @ self.path_rotation.T)
+
+    def parameters(self) -> dict:
+        """Record enough settings to recreate this path, including its placement."""
+        return {"family": self.family, "duration": self.duration, "seed": self.seed,
+                "origin": self.origin.tolist(), "yaw_offset": self.yaw_offset,
+                "motion_scale": self.motion_scale, "cycles": self.cycles,
+                "knots": self.knots.tolist(), "points": self.points.tolist()}
 
     def sample(self, time: float) -> ReferenceState:
         if not np.isfinite(time):
             raise ValueError("reference time must be finite")
         t = float(np.clip(time, 0., self.duration))
         if self.family == "hover":
-            return ReferenceState(self.origin.copy(), np.zeros(3), np.zeros(3))
+            return ReferenceState(self.origin.copy(), np.zeros(3), np.zeros(3), self.yaw_offset)
         if self.family in ("straight", "climb_descent", "waypoints"):
             i = min(int(np.searchsorted(self.knots, t, side="right")) - 1, len(self.knots) - 2)
             s, ds, dds = smooth_step(t - self.knots[i], self.knots[i+1] - self.knots[i])
             delta = self.points[i+1] - self.points[i]
-            return ReferenceState(self.points[i] + s*delta, ds*delta, dds*delta)
+            return ReferenceState(self.points[i] + s*delta, ds*delta, dds*delta, self.yaw_offset)
         s, ds, dds = smooth_step(t, self.duration)
-        phase, rate, acceleration = 2*np.pi*np.array([s, ds, dds])
+        phase, rate, acceleration = 2*np.pi*self.cycles*np.array([s, ds, dds])
         if self.family == "circle":
             p = [.18*(1-np.cos(phase)), .18*np.sin(phase), 0.]
             v = [.18*np.sin(phase)*rate, .18*np.cos(phase)*rate, 0.]
@@ -73,7 +89,10 @@ class FlightReference:
             v = [.22*np.cos(phase)*rate, .2*np.cos(2*phase)*rate, 0.]
             a = [.22*(-np.sin(phase)*rate**2 + np.cos(phase)*acceleration),
                  .2*(-2*np.sin(2*phase)*rate**2 + np.cos(2*phase)*acceleration), 0.]
-        return ReferenceState(self.origin + p, np.array(v), np.array(a), .12*np.sin(phase))
+        return ReferenceState(self.origin + self.motion_scale*(self.path_rotation @ p),
+                              self.motion_scale*(self.path_rotation @ v),
+                              self.motion_scale*(self.path_rotation @ a),
+                              self.yaw_offset + .12*np.sin(phase))
 
 
 @dataclass(frozen=True)

@@ -9,8 +9,8 @@ import pytest
 
 from drone_sim import DroneSimulator
 from drone_sim.playback import (
-    FlightTrack, MAX_SPEED, MIN_SPEED, PlaybackController, add_path,
-    apply_frame, load_flight, playback_flight,
+    ComparisonTracks, FlightTrack, HYBRID_RGBA, PHYSICS_RGBA, MAX_SPEED, MIN_SPEED,
+    PlaybackController, PredictionRenderer, add_path, apply_frame, load_comparison, load_flight, playback_flight,
 )
 
 
@@ -137,9 +137,98 @@ def test_visual_path_is_bounded_and_skips_stationary_segments(track):
     assert scene.ngeom == 0
 
 
-def test_prediction_overlay_is_explicitly_deferred(track):
-    with pytest.raises(NotImplementedError, match="NN-prediction"):
-        playback_flight(track, nn_prediction=track)
+def test_prediction_overlay_modes_and_alignment_validation(track):
+    tracks = ComparisonTracks(track, track, track)
+    assert tracks.default_mode == "both"
+    assert list(tracks.visible_predictions("physics")) == ["physics"]
+    assert list(tracks.visible_predictions("hybrid")) == ["hybrid"]
+    assert list(tracks.visible_predictions("both")) == ["physics", "hybrid"]
+    assert not tracks.visible_predictions("reference")
+    with pytest.raises(ValueError, match="timestamp"):
+        ComparisonTracks(track, FlightTrack(track.time+.01, track.states))
+    with pytest.raises(ValueError, match="different trajectory"):
+        ComparisonTracks(FlightTrack(track.time, track.states, metadata={"trajectory_id": "a"}),
+                         FlightTrack(track.time, track.states, metadata={"trajectory_id": "b"}))
+    with pytest.raises(ValueError, match="not loaded"):
+        ComparisonTracks(track).visible_predictions("physics")
+    with pytest.raises(ValueError, match="comparison"):
+        tracks.visible_predictions("unknown")
+
+
+def test_load_phase5_comparison_archive_selects_matching_trajectory_without_changing_file(tmp_path, track):
+    truth = np.stack([track.states, track.states])
+    truth[1, :, 0] += 2
+    physics, hybrid = truth.copy(), truth.copy()
+    physics[:, 1:, 1] += .05
+    hybrid[:, 1:, 2] += .01
+    path = tmp_path/"test_recursive.npz"
+    np.savez_compressed(path, time=track.time, truth_states=truth, physics_states=physics, hybrid_states=hybrid,
+                        trajectory_ids=np.array(["test_a", "test_b"]), families=np.array(["circle", "hover"]),
+                        metadata_json='{"mode":"recursive","truth_refresh":null}')
+    before = path.read_bytes()
+    loaded = load_comparison(path, trajectory_id="test_b")
+    np.testing.assert_array_equal(loaded.reference.states, truth[1])
+    np.testing.assert_array_equal(loaded.physics.states, physics[1])
+    np.testing.assert_array_equal(loaded.hybrid.states, hybrid[1])
+    assert loaded.reference.metadata["mode"] == "recursive"
+    assert loaded.hybrid.metadata["trajectory_id"] == "test_b"
+    assert load_comparison(path).reference.metadata["trajectory_id"] == "test_a"
+    assert path.read_bytes() == before
+    with pytest.raises(ValueError, match="unknown trajectory"):
+        load_comparison(path, trajectory_id="missing")
+
+
+def test_renderer_copies_real_visual_meshes_in_blue_orange_without_reference_mutation(track, monkeypatch):
+    simulator = DroneSimulator()
+    physics, hybrid = track.states.copy(), track.states.copy()
+    physics[:, 0] += .2
+    hybrid[:, 1] -= .3
+    tracks = ComparisonTracks(track, FlightTrack(track.time, physics), FlightTrack(track.time, hybrid))
+    renderer = PredictionRenderer(simulator.model, tracks)
+    scene = mujoco.MjvScene(simulator.model, maxgeom=100)
+    original_state = simulator.state().as_array()
+    original_materials = simulator.model.mat_rgba.copy()
+    monkeypatch.setattr(mujoco, "mj_step", lambda *args: pytest.fail("ghost playback must not integrate"))
+    renderer.update(scene, track.time[2], "both", show_path=False)
+    assert scene.ngeom == 14  # Seven original visual meshes per ghost, no collision hulls/floor.
+    for index, geom in enumerate(scene.geoms[:scene.ngeom]):
+        assert geom.type == mujoco.mjtGeom.mjGEOM_MESH
+        assert geom.dataid == (index % 7)*2
+        assert geom.matid == -1 and geom.objid == -1 and geom.transparent == 1
+        np.testing.assert_allclose(geom.rgba, PHYSICS_RGBA if index < 7 else HYBRID_RGBA, atol=1e-7)
+    np.testing.assert_allclose(renderer.data["physics"].qpos[:3], physics[2, :3])
+    np.testing.assert_allclose(renderer.data["hybrid"].qpos[:3], hybrid[2, :3])
+    np.testing.assert_array_equal(simulator.state().as_array(), original_state)
+    np.testing.assert_array_equal(simulator.model.mat_rgba, original_materials)
+    renderer.update(scene, track.time[0], "physics", show_path=False)
+    assert scene.ngeom == 7
+    renderer.update(scene, track.time[3], "hybrid", show_path=False)
+    assert scene.ngeom == 7
+    np.testing.assert_allclose(scene.geoms[0].rgba, HYBRID_RGBA, atol=1e-7)
+    renderer.update(scene, track.time[1], "reference", show_path=False)
+    assert scene.ngeom == 0
+
+
+def test_prediction_path_cache_and_capacity_keep_meshes_visible(track):
+    simulator = DroneSimulator()
+    renderer = PredictionRenderer(simulator.model, ComparisonTracks(track, track, track))
+    scene = mujoco.MjvScene(simulator.model, maxgeom=16)
+    renderer.update(scene, track.time[0], "both")
+    assert scene.ngeom == 16  # Path edges yield space to the fourteen drone meshes.
+    renderer.update(scene, track.time[2], "both")
+    assert scene.ngeom == 16
+    renderer.update(scene, track.time[1], "reference")
+    assert scene.ngeom == 3
+    renderer.update(scene, track.time[1], "reference", show_path=False)
+    assert scene.ngeom == 0
+    with pytest.raises(RuntimeError, match="capacity"):
+        renderer.update(mujoco.MjvScene(simulator.model, maxgeom=10), track.time[0], "both")
+
+
+@pytest.mark.parametrize("opacity", [0, 1, -1, np.nan])
+def test_overlay_opacity_is_transparent_and_validated(track, opacity):
+    with pytest.raises(ValueError, match="opacity"):
+        PredictionRenderer(DroneSimulator().model, ComparisonTracks(track), opacity=opacity)
 
 
 @pytest.mark.parametrize("times,shape", [([], (0, 13)), ([0, 0], (2, 13)), ([1, 0], (2, 13)),
@@ -225,3 +314,64 @@ def test_viewer_loop_applies_recorded_frames_and_handles_queued_controls(track, 
     playback_flight(track, paused=True)
     assert len(observed) == 3
     np.testing.assert_allclose(observed, track.states[:3, :7])
+
+
+def test_viewer_switches_all_overlay_modes_and_preserves_reference_geometry(track, monkeypatch):
+    import glfw
+    import mujoco.viewer
+    import drone_sim.playback as playback
+    from contextlib import nullcontext
+
+    observed, texts = [], []
+    sequence = [glfw.KEY_1, glfw.KEY_2, glfw.KEY_3, glfw.KEY_0, glfw.KEY_Q]
+
+    class Viewer:
+        def __init__(self, model, data, key_callback, **kwargs):
+            self.data, self.callback = data, key_callback
+            self.cam, self.opt = mujoco.MjvCamera(), mujoco.MjvOption()
+            self.user_scn = mujoco.MjvScene(model, maxgeom=300)
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+        def lock(self):
+            return nullcontext()
+        def is_running(self):
+            return len(observed) < 6
+        def set_texts(self, text):
+            texts.append(text[2])
+        def sync(self, **kwargs):
+            observed.append((self.user_scn.ngeom, self.opt.geomgroup.copy(), self.data.qpos.copy()))
+            key = sequence[len(observed)-1]
+            if key != glfw.KEY_Q:
+                # Simulate the viewer's own group toggle before our callback.
+                group = key-glfw.KEY_0
+                self.opt.geomgroup[group] ^= 1
+                self.callback(glfw.KEY_RIGHT)
+            self.callback(key)
+
+    monkeypatch.setattr(mujoco.viewer, "launch_passive", Viewer)
+    monkeypatch.setattr(playback.time, "perf_counter", lambda ticks=count(): next(ticks)*.001)
+    monkeypatch.setattr(playback.time, "sleep", lambda _: None)
+    monkeypatch.setattr(mujoco, "mj_step", lambda *args: pytest.fail("comparison must not integrate"))
+    playback_flight(ComparisonTracks(track, track, track), paused=True, show_path=False)
+    assert [row[0] for row in observed] == [14, 7, 7, 14, 0]
+    assert all(row[1][0] == 1 and row[1][2] == 1 for row in observed)
+    np.testing.assert_allclose([row[2] for row in observed], track.states[[0, 1, 2, 3, 3], :7])
+    for text, mode in zip(texts, ("both", "physics", "hybrid", "both", "reference")):
+        assert f"loop OFF | {mode}" in text
+
+
+def test_comparison_loader_rejects_missing_fields_and_bad_shapes(tmp_path, track):
+    path = tmp_path/"bad.npz"
+    np.savez(path, truth_states=np.zeros((1, 4, 13)))
+    with pytest.raises(ValueError, match="missing"):
+        load_comparison(path)
+    arrays = dict(time=track.time, truth_states=track.states[None], physics_states=track.states[None],
+                  hybrid_states=track.states[None], trajectory_ids=np.array(["test_a"]))
+    for change, message in (({"hybrid_states": track.states}, "shape"),
+                             ({"metadata_json": "[]"}, "JSON object"),
+                             ({"trajectory_ids": np.array(["a", "a"])}, "unique")):
+        np.savez(path, **{**arrays, **change})
+        with pytest.raises(ValueError, match=message):
+            load_comparison(path)

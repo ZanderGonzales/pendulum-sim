@@ -1,0 +1,207 @@
+{
+  "phase": 4,
+  "status": "complete",
+  "training_status": "untrained",
+  "optimizer_updates": 0,
+  "command": "python scripts/model_drone_residual/prepare_drone_residual.py",
+  "code_revision": "670503d40b32e9d053c742d3ee971158ccc5eb77",
+  "working_tree_dirty": true,
+  "source_sha256": {
+    "src/drone_sim/__init__.py": "21844f11cc66dd821c1c6ee4a398bc56361376e4f4d87f4ef8b6706b744925e6",
+    "src/drone_sim/artifacts.py": "afe5363d0d27145029216abb09c9246939dd7dbba25eac6949940ea26b4d9ff2",
+    "src/drone_sim/controls.py": "188922fcda5e43afaf5261b144acd476fdb64296c498e29d8e47d92f4460b209",
+    "src/drone_sim/dataset.py": "7687ac76393ea8ffdf1fe0b59b6044bbec174b9a854acc60ac1a48c37e237c21",
+    "src/drone_sim/dynamics.py": "b66a8088938657ab026a260967571aa9805c1ee5688248bd3da85c7889ffb2da",
+    "src/drone_sim/evaluation.py": "a34024f40829621171bc47c8e81473aa27795eec8afe5c7ec4d3b7624ed58892",
+    "src/drone_sim/flight.py": "abbe1c4f04e0151f15ee7849c8d984025e1432c6987e89a36bf6fbe8c9c381dc",
+    "src/drone_sim/frames.py": "28aa1dbb8ab9a055c6ce632a08d05f3ec6dfca9448717a7212621e4537b80caf",
+    "src/drone_sim/physics.py": "cf2ce6b32d8ab073fe70c5caa59945b8c4d7249e656af42c4aeca6b996296740",
+    "src/drone_sim/playback.py": "a013bc5578e71cffe4a607e06a2ee2a68d2803d77988077f3f35cad494606194",
+    "src/drone_sim/plotting.py": "6a3710f4165886f39455a037ece781729264f31b264497e2a978e49beb9da8d5",
+    "src/drone_sim/types.py": "7681602233a40dca97659150ac3b869d3b128433442e74b84bfa7aa310c95a3c",
+    "src/drone_sim/verification.py": "1b88ec8c951ab167c208cde73eb9b6768d0b667f56691cf1e8c591b58ad28ac1",
+    "src/model_drone_residual/__init__.py": "cb945788e0ab20503963a16310eaa6f9adafddcf391cb47c9a70eea26d750dc1",
+    "src/model_drone_residual/evaluation.py": "1cd6ea3db62b3dc74cb00661890bb868d69bcdeb0c42da002c1b95dfa7efb3fd",
+    "src/model_drone_residual/model.py": "7d70f0b5cf9fadce112ced7e4e077e3614ed2b8a464c339e77d3c0d75b35a3f0",
+    "src/model_drone_residual/residuals.py": "d2f3e3e1ce44bac299fe08a09c2658d4e88d854d2fbf73d29cca7bce89c2a143",
+    "src/model_drone_residual/training.py": "ec73a9e6a06aabf05c84205f17c40b88e831b0b1eb2ede501890b7d4b71de660",
+    "scripts/model_drone_residual/prepare_drone_residual.py": "1d8d57f74f07b1711c695151c61caeea11f941f13593a50b6fcd2ac534c1e965"
+  },
+  "inputs": {
+    "main": {
+      "path": "runs/Drone/phase_2/dataset.npz",
+      "sha256": "4cf5e3db6702c842960a507de9682c14352291619ac7a1cfd55e1a5633ad97cb"
+    },
+    "benchmark": {
+      "path": "runs/Drone/phase_2/benchmark_dataset.npz",
+      "sha256": "c7836b5714e8a6eacd23705beca3800cd4a3ffce58e48d2dd5cb8c05ce1fa804"
+    }
+  },
+  "model_config": {
+    "hidden_size": 64,
+    "hidden_layers": 2,
+    "input_size": 14,
+    "output_size": 12,
+    "activation": "Tanh"
+  },
+  "seed": 0,
+  "trainable_parameters": 5900,
+  "torch_version": "2.14.0+cpu",
+  "architecture_parameter_counts": {
+    "2x32": 1932,
+    "2x64": 5900,
+    "2x128": 19980,
+    "1x64": 1740,
+    "4x64": 14220
+  },
+  "feature_order": [
+    "velocity_body_x",
+    "velocity_body_y",
+    "velocity_body_z",
+    "angular_velocity_body_x",
+    "angular_velocity_body_y",
+    "angular_velocity_body_z",
+    "gravity_body_x",
+    "gravity_body_y",
+    "gravity_body_z",
+    "thrust_N",
+    "moment_x_Nm",
+    "moment_y_Nm",
+    "moment_z_Nm",
+    "dt_s"
+  ],
+  "target_order": [
+    "delta_position_current_body_x",
+    "delta_position_current_body_y",
+    "delta_position_current_body_z",
+    "delta_velocity_current_body_x",
+    "delta_velocity_current_body_y",
+    "delta_velocity_current_body_z",
+    "delta_rotation_predicted_next_body_x",
+    "delta_rotation_predicted_next_body_y",
+    "delta_rotation_predicted_next_body_z",
+    "delta_angular_velocity_body_x",
+    "delta_angular_velocity_body_y",
+    "delta_angular_velocity_body_z"
+  ],
+  "residual_convention": {
+    "position_velocity_frame": "current body",
+    "orientation": "Log(R_physics_next.T @ R_sim_next), right-composed in predicted next body axes",
+    "angular_velocity": "simulator minus physics body-coordinate state components",
+    "units_by_group": [
+      "m",
+      "m/s",
+      "rad",
+      "rad/s"
+    ]
+  },
+  "physics_parameters": {
+    "mass": 0.027,
+    "inertia": [
+      2.3951e-05,
+      2.3951e-05,
+      3.2347e-05
+    ],
+    "gravity": [
+      0.0,
+      0.0,
+      -9.81
+    ]
+  },
+  "prediction_config": {
+    "dt": 0.01,
+    "internal_dt": 0.002,
+    "duration": 10.0
+  },
+  "reference_simulation": {
+    "mujoco_version": "3.16.0",
+    "model_repository": "https://github.com/google-deepmind/mujoco_menagerie",
+    "model_revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+    "model_license": "MIT",
+    "simulation_config": {
+      "dt": 0.01,
+      "internal_dt": 0.002,
+      "duration": 10.0
+    },
+    "mass_kg": 0.027,
+    "inertia_kg_m2": [
+      2.3951e-05,
+      2.3951e-05,
+      3.2347e-05
+    ],
+    "gravity_world_m_s2": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "density_kg_m3": 1.225,
+    "viscosity_pa_s": 1.8e-05,
+    "wind_world_m_s": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "integrator": "RK4",
+    "actuator_gears": [
+      1.0,
+      -1e-05,
+      -1e-05,
+      -1e-05
+    ],
+    "actuator_ctrlrange": [
+      [
+        0.0,
+        0.35
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ]
+    ],
+    "state_order": [
+      "x",
+      "y",
+      "z",
+      "qw",
+      "qx",
+      "qy",
+      "qz",
+      "vx",
+      "vy",
+      "vz",
+      "wx",
+      "wy",
+      "wz"
+    ],
+    "control_order": [
+      "thrust_N",
+      "moment_x_Nm",
+      "moment_y_Nm",
+      "moment_z_Nm"
+    ],
+    "frames": "world +z up; quaternion wxyz body-to-world; velocity world; angular velocity body"
+  },
+  "split_sample_counts": {
+    "train": 80000,
+    "validation": 10000,
+    "test": 10000,
+    "benchmark": 10000
+  },
+  "preselected_examples": [
+    "test_000000",
+    "test_000001",
+    "test_000002",
+    "test_000003",
+    "test_000004",
+    "benchmark_000000"
+  ],
+  "elapsed_seconds": 7.817796700001054
+}

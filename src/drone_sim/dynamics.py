@@ -1,4 +1,4 @@
-"""MuJoCo reference simulator only; the independent physics model is Phase 3.
+"""MuJoCo reference simulator; independent rigid-body prediction is in physics.py.
 
 MuJoCo free-joint qpos is [p_world, q_wxyz], qvel is [v_world, omega_body].
 Positive moments use the right-hand rule; stock moment gears are NEGATIVE.
@@ -21,12 +21,16 @@ MUJOCO_VERSION = "3.16.0"
 class DroneSimulator:
     """Own one independent MjModel/MjData pair; no viewer or network required."""
 
-    def __init__(self, config: SimulationConfig = SimulationConfig()):
+    def __init__(self, config: SimulationConfig = SimulationConfig(), *, fluid_forces: bool = True):
         if mujoco.__version__ != MUJOCO_VERSION:
             raise RuntimeError(f"Install mujoco=={MUJOCO_VERSION}; found {mujoco.__version__}")
         self.config = config
         self.model = mujoco.MjModel.from_xml_path(str(MODEL_DIRECTORY / "scene.xml"))
         self.model.opt.timestep = config.internal_dt
+        if not fluid_forces:
+            # Diagnostic model instance only; the normal reference stays unchanged.
+            self.model.opt.density = 0.
+            self.model.opt.viscosity = 0.
         self.data = mujoco.MjData(self.model)
         self.body_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "cf2")
         names = ("body_thrust", "x_moment", "y_moment", "z_moment")
@@ -87,6 +91,8 @@ class DroneSimulator:
             "model_revision": self.provenance["revision"], "model_license": self.provenance["license"],
             "simulation_config": asdict(self.config), "mass_kg": self.mass,
             "inertia_kg_m2": self.inertia.tolist(), "gravity_world_m_s2": self.model.opt.gravity.tolist(),
+            "inertial_position_body_m": self.model.body_ipos[self.body_id].tolist(),
+            "inertial_quaternion_wxyz": self.model.body_iquat[self.body_id].tolist(),
             "density_kg_m3": float(self.model.opt.density), "viscosity_pa_s": float(self.model.opt.viscosity),
             "wind_world_m_s": self.model.opt.wind.tolist(), "integrator": "RK4",
             "actuator_gears": self.gears.tolist(), "actuator_ctrlrange": self.control_limits.tolist(),

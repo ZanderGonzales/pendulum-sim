@@ -1,4 +1,4 @@
-"""Run a single controlled reference flight; dataset splitting is Phase 2."""
+"""Run a single controlled reference flight for inspection or dataset generation."""
 
 from dataclasses import asdict
 import numpy as np
@@ -18,7 +18,7 @@ def simulate_flight(
     """Log requested/applied controls, full states, contacts, and failure reason.
 
     Contact or flight-envelope failures stop collection and invalidate the entire
-    flight. A later dataset generator must use valid_for_learning to reject it.
+    flight. Dataset generation uses valid_for_learning to reject it.
     """
     config = simulator.config
     if not np.isclose(reference.duration, config.duration):
@@ -54,6 +54,7 @@ def simulate_flight(
     metadata.update({"family": reference.family, "seed": reference.seed,
                      "controller_config": asdict(controller_config),
                      "reference_definition": "drone_sim.controls.FlightReference",
+                     "reference_parameters": reference.parameters(),
                      "reference_knots": reference.knots.tolist(), "reference_points": reference.points.tolist(),
                      "initial_state": states[0].tolist(), "requested_steps": config.num_steps,
                      "completed_steps": len(applied),

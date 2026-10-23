@@ -1,0 +1,16 @@
+{
+  "requested": {
+    "interval_steps": null,
+    "steps": [],
+    "interval_seconds": null,
+    "times": []
+  },
+  "resolved_steps": [],
+  "resolved_times_s": [],
+  "refresh_count": 0,
+  "dt_s": 0.01,
+  "num_steps": 1000,
+  "includes_final_step": false,
+  "replacement": "full position, quaternion orientation, world velocity, body angular velocity",
+  "timing": "after predicting step k, replace state at the same k; then continue with control[k]"
+}

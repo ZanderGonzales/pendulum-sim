@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "drone_tests_passed": 201,
+  "unique_training_runs": 36,
+  "refresh_runs": 27,
+  "prediction_archives_checked": 198,
+  "comparison_rows": 468,
+  "pairwise_rows": 5248,
+  "refresh_event_rows": 165240,
+  "drift_segment_rows": 165360,
+  "plots": 216,
+  "complete_epoch_accounting_verified": true,
+  "all_metrics_and_simulator_percentages_recomputed": true,
+  "all_pairwise_percentages_recomputed": true,
+  "all_playback_archives_loaded": true,
+  "all_report_links_exist": true,
+  "source_and_input_hashes_match": true,
+  "protected_files_unchanged": true,
+  "no_refresh_matches_training_evaluation_exactly": true,
+  "every_step_max_difference_vs_one_step": 1.9675289175680177e-11,
+  "checkpoint_provenance_matches_execution_source_catalog": true,
+  "report_only_source_changes_documented": true
+}

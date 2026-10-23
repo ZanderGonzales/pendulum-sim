@@ -1,0 +1,40 @@
+{
+  "phase": 7,
+  "status": "complete",
+  "unique_training_runs": 36,
+  "completed_training_runs": 36,
+  "completed_refresh_runs": 27,
+  "manifest": "suite_manifest.json",
+  "command": "python scripts/model_drone_residual/run_drone_experiments.py",
+  "elapsed_seconds_this_invocation": 919.192761600003,
+  "protected_files_unchanged": true,
+  "total_actual_training_updates": 390774,
+  "total_training_seconds": 530.8136853000615,
+  "all_training_runs_end_on_complete_epochs": true,
+  "report_generation_source_sha256": {
+    "src/model_drone_residual/experiment_reporting.py": "0f3ab0d7135fc1196a20e1878ad055e23a747d48e61f297d15cbe3f0408086e7",
+    "src/model_drone_residual/reporting.py": "8cdbf5d7d3e2c32c8fe3724bf8157dd37d204216fc1587699085371035f1d14b"
+  },
+  "report_only_source_changes_after_start": {
+    "src/model_drone_residual/experiment_reporting.py": {
+      "execution_sha256": "135e7065566d617c3bf0b4c96e25bcc583d17cfcd467d02ca863a261d4fc8a77",
+      "current_sha256": "0f3ab0d7135fc1196a20e1878ad055e23a747d48e61f297d15cbe3f0408086e7",
+      "scope": "Report wording, layout, links, and numeric formatting; no changes to training, residuals, physics, or evaluation."
+    },
+    "src/model_drone_residual/reporting.py": {
+      "execution_sha256": "a2662fefed3104f116ec5127a35d367712b7389a57be8d649a0e9c6decf2e9d2",
+      "current_sha256": "8cdbf5d7d3e2c32c8fe3724bf8157dd37d204216fc1587699085371035f1d14b",
+      "scope": "Report wording, layout, links, and numeric formatting; no changes to training, residuals, physics, or evaluation."
+    }
+  },
+  "drone_regression_tests": {
+    "passed": 201,
+    "elapsed_seconds": 28.85
+  },
+  "focused_report_tests": {
+    "passed": 1,
+    "elapsed_seconds": 2.21
+  },
+  "artifact_verification": "artifact_verification.json",
+  "artifact_verification_status": "passed"
+}
